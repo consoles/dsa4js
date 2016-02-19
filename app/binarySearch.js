@@ -7,7 +7,7 @@ let binarySearch = (arr, element) => {
 	let start = 0,
 		end = arr.length - 1
 	while (start <= end) {
-		let mid = parseInt((start + end) / 2)
+		let mid = (start + end) >> 1
 		if (element === arr[mid])
 			return mid
 		if (element > arr[mid])
@@ -24,7 +24,7 @@ let binarySearch = (arr, element) => {
 let binarySearchByRecursion = (arr, element, start, end) => {
 
 	if (start <= end) {
-		let mid = parseInt((start + end) / 2)
+		let mid = (start + end) >> 1
 		if (arr[mid] === element)
 			return mid
 		if (element > arr[mid])
