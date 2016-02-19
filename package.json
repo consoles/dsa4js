@@ -22,7 +22,6 @@
   "homepage": "https://github.com/consoles/dsa4js#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "expect": "^1.14.0",
     "mocha": "^2.4.5"
   }
 }
