@@ -1,0 +1,28 @@
+{
+  "name": "dsa4js",
+  "version": "1.0.0",
+  "description": "data structure and algorithm described in javascript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/consoles/dsa4js.git"
+  },
+  "keywords": [
+    "dsa",
+    "js"
+  ],
+  "author": "consoles",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/consoles/dsa4js/issues"
+  },
+  "homepage": "https://github.com/consoles/dsa4js#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "expect": "^1.14.0",
+    "mocha": "^2.4.5"
+  }
+}
