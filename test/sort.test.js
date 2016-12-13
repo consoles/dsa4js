@@ -5,6 +5,7 @@ const selectionSort = sort.selectionSort
 const bubbleSort = sort.bubbleSort
 const insertSort = sort.insertSort
 const shellSort = sort.shellSort
+const mergeSort = sort.mergeSort
 
 describe('<排序算法测试>', () => {
 	it('#1 选择排序', () => {
@@ -35,5 +36,12 @@ describe('<排序算法测试>', () => {
 		expect(shellSort([6, 2, 4, 1, 5, 9])).to.be.eql([1, 2, 4, 5, 6, 9])
 		expect(shellSort([5, 4, 3, 2, 1])).to.be.eql([1, 2, 3, 4, 5])
 		expect(shellSort([0, 9, -111, 99.3, 78.56, -54.3])).to.be.eql([-111, -54.3, 0, 9, 78.56, 99.3])
+	})
+	it('#5 归并排序', () => {
+		expect(mergeSort([1, 2, 3, 5, 4])).to.be.eql([1, 2, 3, 4, 5])
+		expect(mergeSort([2, 2, 1, -4, 7, 9])).to.be.eql([-4, 1, 2, 2, 7, 9])
+		expect(mergeSort([6, 2, 4, 1, 5, 9])).to.be.eql([1, 2, 4, 5, 6, 9])
+		expect(mergeSort([5, 4, 3, 2, 1])).to.be.eql([1, 2, 3, 4, 5])
+		expect(mergeSort([0, 9, -111, 99.3, 78.56, -54.3])).to.be.eql([-111, -54.3, 0, 9, 78.56, 99.3])
 	})
 })

@@ -6,12 +6,10 @@
 import random
 
 RANGE = 10000000
-arr = [i for i in range(RANGE)]
-random.shuffle(arr)
 
 f = open('../test/input/bitSort.input','w')
 
-for i in arr:
+for i in random.sample(range(RANGE),RANGE):
 	f.write(str(i) + '\n')
 f.close()
 

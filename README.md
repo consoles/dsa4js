@@ -10,6 +10,8 @@ $ cd dsa4js && npm install
 $ mocha
 ```
 
+[各种排序算法](http://wwwlgis.informatik.uni-kl.de/archiv/wwwdvs.informatik.uni-kl.de/courses/DBSREAL/SS2005/Vorlesungsunterlagen/Implementing_Sorting.pdf)
+
 ### 选择排序
 
 找到数组中的最小的那个元素，其次将它和数组的第一个元素进行交换（如果第一个元素本身就是最小的元素，那么它将和自己进行交换）。再次，在剩下的元素中找到最小的元素，将它和数组的第二个元素交换位置。如此反复，直到整个数组有序。核心思想：
@@ -41,3 +43,7 @@ $ mocha
 > 先将整个待排元素序列分割成若干个子序列（由相隔某个“增量”的元素组成的）分别进行直接插入排序，然后依次缩减增量再进行排序，待整个序列中的元素基本有序（增量足够小）时，再对全体元素进行一次直接插入排序。因为*直接插入排序在元素基本有序的情况下（接近最好情况），效率是很高的*，因此希尔排序在时间效率上比前两种方法有较大提高,*数组越大，优势越大*
 
 [希尔排序](http://blog.csdn.net/morewindows/article/details/6668714)
+
+### 归并排序
+
+将大数组划分成只有一个元素的数组，然后逐个比较，进行合并。典型的分治法。[分治法](http://blog.jobbole.com/100349/)
