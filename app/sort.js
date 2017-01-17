@@ -63,7 +63,7 @@ let mergeSort = arr => {
 			.concat(left.slice(i))
 			.concat(right.slice(j))
 
-		console.log('result - %d : %j',mergeCount++,ret)	
+		// console.log('result - %d : %j',mergeCount++,ret)	
 		return ret	
 	}
 
@@ -75,8 +75,8 @@ let mergeSort = arr => {
 	var left = arr.slice(0,pos),
 		right = arr.slice(pos)
 
-	console.log('left - %d : %j',sortCount,left)	
-	console.log('right - %d : %j',sortCount,right)
+	// console.log('left - %d : %j',sortCount,left)	
+	// console.log('right - %d : %j',sortCount,right)
 	sortCount++	
 
 	// 合并，同理将1*N的数组两两合并,最终合并为N*1的数组，时间复杂度为log(N)

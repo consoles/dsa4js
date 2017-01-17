@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>随机连接</title>
+</head>
+<body>
+  <label for="pointsNumber">点的个数</label><input type="number" id="pointsNumber" value="6">
+  <label for="p">概率</label><input type="number" id="p" min="0" max="1" step="0.1" value="0.5">
+  <button>渲染</button>
+  <canvas id="canvas" width="1024" height="768"></canvas>
+  <script>
+    var bernoulli = function(p) {
+      if (p < 0 || p > 1) throw new RangeError('概率错误');
+      return Math.random() < p;  
+    }
+
+    var drawLine = function(ctx,x1,y1,x2,y2) {
+      ctx.beginPath()
+      ctx.moveTo(x1,y1)
+      ctx.lineTo(x2,y2)
+      ctx.closePath()
+      ctx.strokeStyle = '#0cf'
+      ctx.stroke()
+    }
+
+    var render = function(ctx,pointsNumber,p){
+
+      ctx.clearRect(0,0,1024,768)
+
+      var circleX = 600,
+      circleY = 300,
+      radius = 200;
+
+      // big circle  
+      ctx.strokeStyle = '#f00';
+      ctx.beginPath();
+      ctx.arc(circleX,circleY,radius,0,2 * Math.PI,true);
+      ctx.closePath();
+      ctx.stroke();
+
+      // points
+      var points = [];
+      var angle = 2 * Math.PI / pointsNumber;
+      for (let i = 0;i < pointsNumber;i++) {
+        var pointX = circleX + radius * Math.cos(angle*i),
+          pointY = circleY + radius * Math.sin(angle*i);
+
+        points.push({x:pointX,y:pointY});  
+        ctx.fillStyle = '#00f';
+        ctx.beginPath();
+        ctx.arc(pointX,pointY,10,0,Math.PI*2,true);
+        ctx.closePath();
+        ctx.fill();  
+      }
+
+      // line
+      for(let i = 0 ;i < pointsNumber - 1;i++) 
+        for (let j = i + 1;j < pointsNumber;j++)
+          if (bernoulli(p)) drawLine(ctx,points[i].x,points[i].y,points[j].x,points[j].y)
+    }
+
+    var ctx = document.querySelector('#canvas').getContext('2d')
+    document.querySelector('button').addEventListener('click',function(e){
+      var pointsNumber = document.querySelector('#pointsNumber').value | 0,
+        p = Number(document.querySelector('#p').value)
+
+      render(ctx,pointsNumber,p) 
+    })
+  </script>
+</body>
+</html>

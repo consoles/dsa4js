@@ -13,6 +13,7 @@ describe('<二分查找测试>', () => {
 		expect(binarySearch(arr,7)).to.be.equal(6)
 		expect(binarySearch(arr,8)).to.be.equal(7)
 		expect(binarySearch(arr,99)).to.be.equal(-1)
+    // expect(binarySearch([ 1, 1, 1, 23, 324, 343, 32324 ],1)).to.be.equal(0)
 	})
 	it('#binarySearchByRecursion', () => {
 		let arr = [1,2,3,4,5,6,7,8]
