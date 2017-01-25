@@ -119,6 +119,8 @@ describe('<util 工具类测试>', () => {
   it('#gcd',() => {
     expect(gcd(1071, 462)).to.be.equal(21)
     expect(gcd(1111111, 1234567)).to.be.equal(1)
+    expect(gcd(1, 2)).to.be.equal(1)
+    expect(gcd(2, 1)).to.be.equal(1)
   })
   it('#gcd2',() => {
     expect(gcd2(1071, 462)).to.be.equal(21)

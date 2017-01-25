@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Point 2D</title>
+  <link rel="stylesheet" href="./css/reset.css">
+</head>
+<body>
+  <canvas width="600" height="600"></canvas>
+  <script src="canvas.js"></script>
+  <script src="chart.js"></script>
+  <script src="point.js"></script>
+  <script>
+    var canvas = new Canvas(document.querySelector('canvas').getContext('2d'))
+    var chart = new Chart(canvas,1,1)
+
+    const T = 50,
+      r = 12
+
+    for(let i = 0;i < T;i++) chart.draw(new Point2D(Math.random(),Math.random(),r))
+
+    setInterval(function(){
+      location.reload()
+    }, 1e3)
+  </script>
+</body>
+</html>

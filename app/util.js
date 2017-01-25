@@ -32,6 +32,9 @@ module.exports = {
     if (endNumber === 2) return 1;
     return module.exports.fib2(endNumber - 2) + module.exports.fib2(endNumber - 1);
   },
+  /**
+   * 递归求斐波那契数列，缓存已经计算的结果
+   */
   fib3:function(endNumber) {
 
     var fib = function(num,arr) {
@@ -251,6 +254,55 @@ module.exports = {
       if (num % i === 0) return false
     }
     return true
+  },
+  /**
+   * 判断两个字符串是否是回环变位，字符串str1中的字符循环移动后可以得到str2
+   * 例如：ACTGACC和TGACGAC
+   */
+  isCircularRotation:function(str1,str2){
+    return str1.length === str2.length && str1.repeat(2).indexOf(str2) != -1
+  },
+  toBinaryString:function(num) {
+    var stack = []
+    while(num) {
+      stack.push(num % 2)
+      num = num / 2 | 0
+    }
+    var str = ''
+    // while(stack.length) {
+    //     str += stack.pop()
+    // }
+    str = stack.reduceRight((prev,current) => '' + prev + current)
+    return str
+  },
+  /**
+   * 中序表达式转化为后序表达式
+   * ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) ) )  将转化为1 2 + 3 4 - 5 6 - * * 
+   */
+  infixToPostfix:function(expStr){
+    // 1.忽略左括号
+    // 2.遇到数字将其放入值栈
+    // 3.遇到符号将其放入符号栈
+    // 4.遇到右括号，计算后缀表达式，同时放入值栈
+    var tokens = expStr.split(/\s+/)
+    var valueStack = []
+    var opStack = []
+
+    var isOperator = function(token) {
+      return token == '+' || token == '-' || token == '*' || token == '/'
+    }
+    for(let token of tokens) {
+      if (isOperator(token)) opStack.push(token)
+      else if (token == '(') continue
+      else if (token == ')') {
+        var num2 = valueStack.pop()
+        var num1 = valueStack.pop()
+        var op = opStack.pop()
+        valueStack.push(`${num1} ${num2} ${op}`)
+      } else {
+        valueStack.push(token)
+      }
+    }
+    return valueStack.pop()
   }
-  
 };
