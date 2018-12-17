@@ -3,7 +3,7 @@
 #
 # 发一个随机红包，100块钱给10个人。每个人最多18块钱，最少4块钱。怎么分？
 # ref:https://segmentfault.com/q/1010000006002081?_ea=979811
-# 
+#
 # 问题转化：
 # 每个人先分配4元，问题就转化为“60块分给10个人，每人不多于14元”
 # 将2个限制变成了一个限制
@@ -37,6 +37,5 @@ for x in range(PEOPLE_NUM):
 	print str(x + 1) + ' -> ' + str(nowMoney)
 	result[x] = nowMoney
 	moneyLeft -= addMoney
-	
-		
+
 print 'total = ' + str(total) + ',sum = ' + str(reduce(lambda x,y: x + y,result))

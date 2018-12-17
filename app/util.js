@@ -274,35 +274,5 @@ module.exports = {
     // }
     str = stack.reduceRight((prev,current) => '' + prev + current)
     return str
-  },
-  /**
-   * 中序表达式转化为后序表达式
-   * ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) ) )  将转化为1 2 + 3 4 - 5 6 - * * 
-   */
-  infixToPostfix:function(expStr){
-    // 1.忽略左括号
-    // 2.遇到数字将其放入值栈
-    // 3.遇到符号将其放入符号栈
-    // 4.遇到右括号，计算后缀表达式，同时放入值栈
-    var tokens = expStr.split(/\s+/)
-    var valueStack = []
-    var opStack = []
-
-    var isOperator = function(token) {
-      return token == '+' || token == '-' || token == '*' || token == '/'
-    }
-    for(let token of tokens) {
-      if (isOperator(token)) opStack.push(token)
-      else if (token == '(') continue
-      else if (token == ')') {
-        var num2 = valueStack.pop()
-        var num1 = valueStack.pop()
-        var op = opStack.pop()
-        valueStack.push(`${num1} ${num2} ${op}`)
-      } else {
-        valueStack.push(token)
-      }
-    }
-    return valueStack.pop()
   }
 };
