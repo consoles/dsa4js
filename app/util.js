@@ -5,29 +5,29 @@
  */
 
 module.exports = {
-  counter:{
-    binomial:0,
-    betterBinomial:0
+  counter: {
+    binomial: 0,
+    betterBinomial: 0
   },
-  _readline:require('readline'),
-  toBinaryString:function(number) {
+  _readline: require('readline'),
+  toBinaryString: function (number) {
     var s = '';
     if (number === 0) s = '0';
-    for (var i = number;i > 0;i >>= 1) {
+    for (var i = number; i > 0; i >>= 1) {
       s = (i % 2) + s;
     }
     return s;
   },
-  fib:function(endNumber) {
+  fib: function (endNumber) {
     var f = 0,
       g = 1;
-    for(var i = 0;i <= endNumber - 2;i++) {
+    for (var i = 0; i <= endNumber - 2; i++) {
       f = f + g;
       g = f - g;
     }
     return f;
   },
-  fib2:function(endNumber) {
+  fib2: function (endNumber) {
     if (endNumber === 1) return 0;
     if (endNumber === 2) return 1;
     return module.exports.fib2(endNumber - 2) + module.exports.fib2(endNumber - 1);
@@ -35,40 +35,40 @@ module.exports = {
   /**
    * 递归求斐波那契数列，缓存已经计算的结果
    */
-  fib3:function(endNumber) {
+  fib3: function (endNumber) {
 
-    var fib = function(num,arr) {
+    var fib = function (num, arr) {
       var e = arr[num - 1];
       if (!e) {
         // if (num == 1) arr[0] = 0;
         // else if (num == 2) arr[1] = 1;
         if (num < 3) arr[num - 1] = num - 1;
-        else arr[num - 1] = fib(num - 1,arr) + fib(num - 2,arr);
+        else arr[num - 1] = fib(num - 1, arr) + fib(num - 2, arr);
       }
       return arr[num - 1];
     };
 
-    var fibs = Array.from({length: endNumber}, _ => 0);
-    return fib(endNumber,fibs);
+    var fibs = Array.from({ length: endNumber }, _ => 0);
+    return fib(endNumber, fibs);
   },
   /**
    * ln(number!)
    * ln(a * b) = ln(a) + ln(b)，参见：https://zh.wikipedia.org/wiki/%E5%AF%B9%E6%95%B0
    */
-  lnFactorial:function(number) {
+  lnFactorial: function (number) {
     return number < 2 ? 0 : Math.log(number) + module.exports.lnFactorial(number - 1);
   },
-  factorial:function(number) {
+  factorial: function (number) {
     var result = 1;
-    while(number--) result *= (number + 1);
+    while (number--) result *= (number + 1);
     return result;
   },
   /**
    * 以2为底的对数
    */
-  lg:function(number) {
-    var i,n;
-    for(i = 0,n = 1;n <= number;i++) 
+  lg: function (number) {
+    var i, n;
+    for (i = 0, n = 1; n <= number; i++)
       n <<= 1;
     return i - 1;
   },
@@ -78,52 +78,52 @@ module.exports = {
    * @return 长度为number的数组，其中第i个元素的值为整数i在参数数组中出现的次数
    * 如果arr中的值均在[0,number)，返回数组中的所有元素之和应该和arr.length相等
    */
-  histogram:function(arr,number) {
-    var result = Array.from({length: number}, _ => 0);
+  histogram: function (arr, number) {
+    var result = Array.from({ length: number }, _ => 0);
     for (let n of arr) n >= 0 && n < number && result[n]++;
     return result;
   },
-  sum:function(arr) {
-    return arr.reduce((a,b) => a + b);
+  sum: function (arr) {
+    return arr.reduce((a, b) => a + b);
   },
   /**
    * mul(7,8) => mul(14,4) => mul(28,2) => mul(56,1) => mul(128,0) + 56 => 56
    */
-  mul:function(a,b) {
+  mul: function (a, b) {
     if (b == 0) return 0;
-    if (b % 2 == 0) return module.exports.mul(a + a,b / 2 | 0);
-    return module.exports.mul(a + a,b / 2 | 0) + a;
+    if (b % 2 == 0) return module.exports.mul(a + a, b / 2 | 0);
+    return module.exports.mul(a + a, b / 2 | 0) + a;
   },
   /**
    * pow(2,3) => pow(4,1) * 2 => pow(16,0) * 4 * 2 => 8
    */
-  pow:function(base,exponent){
+  pow: function (base, exponent) {
     if (exponent == 0) return 1;
-    if (exponent % 2 == 0) return module.exports.pow(base * base,exponent / 2 | 0);
-    return module.exports.pow(base * base,exponent / 2 | 0) * base;
+    if (exponent % 2 == 0) return module.exports.pow(base * base, exponent / 2 | 0);
+    return module.exports.pow(base * base, exponent / 2 | 0) * base;
   },
-  sample:function(min,max) {
+  sample: function (min, max) {
     return (Math.random() * (max - min + 1) + min) | 0;
   },
-  randomString:function(length) {
+  randomString: function (length) {
     var tpl = Math.random().toString(36).slice(2);
-    return length ? tpl.slice(0,length) : tpl;
+    return length ? tpl.slice(0, length) : tpl;
   },
-  shuffle:function(arr) {
+  shuffle: function (arr) {
     var len = arr.length;
-    for (let i = 0;i < len;i++) {
+    for (let i = 0; i < len; i++) {
       // 将arr[i]和与之后的元素随机交换
-      var index = i + module.exports.sample(0,len - i - 1);
-      require('./swap')(arr,i,index)
+      var index = i + module.exports.sample(0, len - i - 1);
+      require('./swap')(arr, i, index)
     }
     return arr
   },
   // 糟糕的洗牌算法，每个元素与数组中的任意一个值交换,上一个算法效率的1/6
-  worstShuffle:function(arr){
+  worstShuffle: function (arr) {
     var len = arr.length;
-    for(let i = 0;i < len;i++){
-      var index = module.exports.sample(0,len - 1);
-      require('./swap')(arr,i,index)
+    for (let i = 0; i < len; i++) {
+      var index = module.exports.sample(0, len - 1);
+      require('./swap')(arr, i, index)
     }
     return arr
   },
@@ -131,7 +131,7 @@ module.exports = {
    * https://zh.wikipedia.org/wiki/%E8%BC%BE%E8%BD%89%E7%9B%B8%E9%99%A4%E6%B3%95
    * 辗转相除法
    */
-  gcd:function(p,q) {
+  gcd: function (p, q) {
     if (p < q) {
       var t = p;
       p = q;
@@ -144,14 +144,14 @@ module.exports = {
    * 更相减损法
    * https://zh.wikipedia.org/wiki/%E8%BC%BE%E8%BD%89%E7%9B%B8%E9%99%A4%E6%B3%95#/media/File:Euclidean_algorithm_252_105_animation_flipped.gif
    */
-  gcd2:function(p,q) {
+  gcd2: function (p, q) {
     if (p < q) {
       var t = p;
       p = q;
       q = t;
     }
     if (p == 0) return q;
-    while(q) {
+    while (q) {
       if (p > q) p = p - q;
       else q = q - p;
     }
@@ -160,70 +160,70 @@ module.exports = {
   /**
    * 3个数升序排列
    */
-  sortAsc:function(a,b,c) {
+  sortAsc: function (a, b, c) {
     var t;
-    if (a > b) t = a,a = b,b = t;
-    if (a > c) t = c,c = a,a = t;
-    if (b > c) t = b,b = c,c = t;
-    return [a,b,c];
+    if (a > b) t = a, a = b, b = t;
+    if (a > c) t = c, c = a, a = t;
+    if (b > c) t = b, b = c, c = t;
+    return [a, b, c];
   },
   /**
    * 二项分布
    */
-  binomial:function(n,k,p){
+  binomial: function (n, k, p) {
     module.exports.counter.binomial++;
     if (n == 0 && k == 0) return 1;
     if (n < 0 || k < 0) return 0;
-    return (1 - p) * module.exports.binomial(n - 1,k,p) + p * module.exports.binomial(n - 1,k - 1,p);
+    return (1 - p) * module.exports.binomial(n - 1, k, p) + p * module.exports.binomial(n - 1, k - 1, p);
   },
   /**
    * http://blog.csdn.net/shuimu12345678/article/details/30773929
    */
-  betterBinomial:function(n,k,p){
+  betterBinomial: function (n, k, p) {
 
-    var bin = function(n,k,p){
+    var bin = function (n, k, p) {
       module.exports.counter.betterBinomial++;
       if (n == 0 && k == 0) return 1;
       if (n < 0 || k < 0) return 0;
       if (matrix[n][k] == -1) {
-        matrix[n][k] = (1 - p) * bin(n - 1,k,p) + p * bin(n - 1,k - 1,p);
+        matrix[n][k] = (1 - p) * bin(n - 1, k, p) + p * bin(n - 1, k - 1, p);
       }
       return matrix[n][k];
     }
 
     // 初始化二维矩阵全-1
     var matrix = new Array(n + 1);
-    for (let i = 0;i < n + 1;i++) {
-      matrix[i] = Array.from({length: k + 1}, _ => -1);
+    for (let i = 0; i < n + 1; i++) {
+      matrix[i] = Array.from({ length: k + 1 }, _ => -1);
     }
 
-    return bin(n,k,p)
+    return bin(n, k, p)
   },
-  readLines:function(inputStream,callback){
+  readLines: function (inputStream, callback) {
     var opts = {
-      input:inputStream
+      input: inputStream
     }
     var rl = module.exports._readline.createInterface(opts)
     var data = [];
-    rl.on('line',function(line) {
+    rl.on('line', function (line) {
       if (line) {
         line = line.trim()
-        data.push(line)  
+        data.push(line)
       }
-    }).on('close',function(){
+    }).on('close', function () {
       callback(data)
     })
   },
-  readInts:function(inputStream,callback){
-    module.exports.readLines(inputStream,function(data){
+  readInts: function (inputStream, callback) {
+    module.exports.readLines(inputStream, function (data) {
       callback(data.map(d => Number(d)).filter(d => !!d))
     })
   },
-  binarySearch:require('./binarySearch').binarySearch,
-  unique:function(arr) {
+  binarySearch: require('./binarySearch').binarySearch,
+  unique: function (arr) {
     var ret = [arr[0]];
-    for(let i = 1; i < arr.length;i++) {
-      if(module.exports.binarySearch(ret,arr[i]) === -1) ret.push(arr[i]);
+    for (let i = 1; i < arr.length; i++) {
+      if (module.exports.binarySearch(ret, arr[i]) === -1) ret.push(arr[i]);
     }
     return ret;
   },
@@ -232,8 +232,8 @@ module.exports = {
    * @param  {[type]} sortedArr 有序数组，可能存在重复
    * @return 数组中小于该键的元素的数量
    */
-  rank:function(key,sortedArr) {
-    var index = module.exports.binarySearch(sortedArr,key);
+  rank: function (key, sortedArr) {
+    var index = module.exports.binarySearch(sortedArr, key);
     return index === -1 ? 0 : index;
   },
   /**
@@ -241,16 +241,16 @@ module.exports = {
    * @param  {[type]} sortedArr 有序数组，可能存在重复
    * @return 数组中等于该键的元素的数量
    */
-  count:function(key,sortedArr) {
+  count: function (key, sortedArr) {
     var count = 0;
-    for (let i = 0;i < sortedArr.length;i++) {
+    for (let i = 0; i < sortedArr.length; i++) {
       if (sortedArr[i] > key) break;
       if (sortedArr[i] === key) count++;
     }
     return count;
   },
-  isPrime:function(num) {
-    for (let i = 0;i < num / 2 | 0;i++) {
+  isPrime: function (num) {
+    for (let i = 0; i < num / 2 | 0; i++) {
       if (num % i === 0) return false
     }
     return true
@@ -259,12 +259,12 @@ module.exports = {
    * 判断两个字符串是否是回环变位，字符串str1中的字符循环移动后可以得到str2
    * 例如：ACTGACC和TGACGAC
    */
-  isCircularRotation:function(str1,str2){
+  isCircularRotation: function (str1, str2) {
     return str1.length === str2.length && str1.repeat(2).indexOf(str2) != -1
   },
-  toBinaryString:function(num) {
+  toBinaryString: function (num) {
     var stack = []
-    while(num) {
+    while (num) {
       stack.push(num % 2)
       num = num / 2 | 0
     }
@@ -272,7 +272,32 @@ module.exports = {
     // while(stack.length) {
     //     str += stack.pop()
     // }
-    str = stack.reduceRight((prev,current) => '' + prev + current)
+    str = stack.reduceRight((prev, current) => '' + prev + current)
     return str
+  },
+  print(str) {
+    process.stdout.write(str + '');
+  },
+  println(str) {
+    console.log(str || '');
+  },
+  initMatrix(rowCount, colCount, defaultValue = 0) {
+    const arr = new Array(rowCount);
+    for (let i = 0; i < rowCount; i++) {
+      arr[i] = new Array(colCount).fill(defaultValue);
+    }
+    return arr;
+  },
+  printMatrix(matrix) {
+    for (let i = 0; i < matrix.length; i++) {
+      for (let item of matrix[i]) {
+        module.exports.print(item + '\t');
+      }
+      module.exports.println();
+    }
+  },
+  readInts(path) {
+    const rl = require('readlines');
+    return rl.readlinesSync(path).filter(x => x.length > 0).map(x => parseInt(x));
   }
 };

@@ -1,76 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>直方图</title>
 </head>
+
 <body>
-  <label for="min">最小值</label><input type="number" id="min" value="0">
-  <label for="max">最大值</label><input type="number" id="max" value="1">
-  <label for="num">等分数</label><input type="number" id="num" value="5">
-  <button>渲染</button>
-  <canvas width="1024" height="768"></canvas>
+  <div style="text-align:center;">
+    <label for="min">最小值</label><input type="number" id="min" value="0">
+    <label for="max">最大值</label><input type="number" id="max" value="1">
+    <label for="num">等分数</label><input type="number" id="num" value="5">
+    <button>渲染</button>
+    <canvas width="1024" height="768"></canvas>
+  </div>
+
+
   <script>
     var ctx = document.querySelector('canvas').getContext('2d')
 
-    var renderChart = function(ctx,min,max,num,data) {
+    var renderChart = function (ctx, min, max, num, data) {
 
-      var getInterval = function(value,num,min,max){
+      var getInterval = function (value, num, min, max) {
         // 算出落在第几份区间
-        if(value < min || value > max) return -1;
+        if (value < min || value > max) return -1;
         return num * (value - min) / (max - min) | 0;
       }
 
-      var getRandomColor = function(){
-        return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6); 
+      var getRandomColor = function () {
+        return "#" + ("00000" + ((Math.random() * 16777215 + 0.5) >> 0).toString(16)).slice(-6);
       }
 
       var step = (max - min) / num
 
       var startX = 100,
-          startY = 600,
-          endX = 1000,
-          endY = 100
+        startY = 600,
+        endX = 1000,
+        endY = 100
 
       // 将nums按照所在区间进行分组
       var nums = new Array(num);
-      for (let i = 0;i < num;i++) nums[i] = 0;
+      for (let i = 0; i < num; i++) nums[i] = 0;
 
-      for (let i = 0;i < data.length;i++) {
-        let k = getInterval(data[i],num,min,max);
+      for (let i = 0; i < data.length; i++) {
+        let k = getInterval(data[i], num, min, max);
         if (k >= 0) nums[k]++;
       }
 
-      var counts = Math.max.apply(this,nums);
+      var counts = Math.max.apply(this, nums);
 
       var width = (endX - startX) / num,
         height = (startY - endY) / counts
 
-      ctx.clearRect(0,0,1024,768)
-      
-      for (let i = 0;i < nums.length;i++) {
+      ctx.clearRect(0, 0, 1024, 768)
+
+      for (let i = 0; i < nums.length; i++) {
         ctx.fillStyle = getRandomColor()
         h = height * nums[i]
         console.log(h)
         let x = startX + width * i,
-        y = startY - h;
-        
-        ctx.fillRect(x,y,width, h)
+          y = startY - h;
+
+        ctx.fillRect(x, y, width, h)
         ctx.fillStyle = '#f0f';
-        ctx.fillText(nums[i],x + width / 2,y - 10);
+        ctx.fillText(nums[i], x + width / 2, y - 10);
       }
     }
 
-    document.querySelector('button').addEventListener('click',function(){
+    document.querySelector('button').addEventListener('click', function () {
       var min = Number(document.querySelector('#min').value),
-         max = Number(document.querySelector('#max').value),
-         num = document.querySelector('#num').value | 0
-  
-      var data = [];   
-      for(let i = 0;i < 100;i++) data.push(Math.random())
-      renderChart(ctx,min,max,num,data);
+        max = Number(document.querySelector('#max').value),
+        num = document.querySelector('#num').value | 0
+
+      var data = [];
+      for (let i = 0; i < 100; i++) data.push(Math.random())
+      renderChart(ctx, min, max, num, data);
     })
 
   </script>
 </body>
+
 </html>
