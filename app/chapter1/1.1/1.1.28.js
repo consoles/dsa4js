@@ -2,7 +2,7 @@
 
 const sortedArr = [-2, 1, 3, 3, 5, 6, 6, 7, 9, 9];
 
-const { binarySearch } = require('../binarySearch');
+const { binarySearch } = require('../../binarySearch');
 
 const uniq = arr => {
     const ret = [];

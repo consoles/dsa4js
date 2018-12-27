@@ -6,7 +6,7 @@
 // 数组中的所有元素的值都应该接近于 N / M。
 
 const _ = require('lodash');
-const { initMatrix, printMatrix } = require('../util');
+const { initMatrix, printMatrix } = require('../../util');
 
 function shuffle(arr) {
     const n = arr.length;

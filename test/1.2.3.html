@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>1.2.3</title>
+  <link rel="stylesheet" href="./css/reset.css">
+</head>
+
+<body>
+  <canvas width="600" height="600"></canvas>
+  <p>编写一个Interval2D的用例，从命令行接受参数N、min和max。生成N个随机的2D间隔，其宽度和高均匀地分布在单位正方形中的min和max之间。用StdDraw画出它们并打印出相交的间隔对的数量以及有包含关系的间隔对数量</p>
+  <script src="canvas.js"></script>
+  <script src="chart.js"></script>
+  <script src="./Interval1D.js"></script>
+  <script src="Interval2D.js"></script>
+  <script>
+    var canvas = new Canvas(document.querySelector('canvas').getContext('2d'))
+    var chart = new Chart(canvas, 1, 1)
+    // var x = Math.random(),
+    // y = Math.random()
+    // console.log(x, y)
+    // chart.drawRect(x,y)
+
+    const boxes = [];
+    let count_of_intersets = 0;
+
+    const T = 3
+    for (let i = 0; i < T; i++) {
+      const interval1D_X = new Interval1D(Math.random(), Math.random());
+      const interval1D_Y = new Interval1D(Math.random(), Math.random());
+      const box = new Interval2D(interval1D_X, interval1D_Y);
+      for (const b of boxes) {
+        if (box.intersect(b)) {
+          count_of_intersets++;
+        }
+      }
+      boxes.push(box);
+      chart.drawRect(box.width, box.height, box.offsetX, box.offsetY);
+    }
+    console.log('矩形相交的数量', count_of_intersets);
+  </script>
+</body>
+
+</html>

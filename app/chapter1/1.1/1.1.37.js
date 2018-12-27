@@ -4,7 +4,7 @@
 // 用上一题中的测试检验这个版本。
 
 const _ = require('lodash');
-const { initMatrix, printMatrix } = require('../util');
+const { initMatrix, printMatrix } = require('../../util');
 
 function worseShuffle(arr) {
     const n = arr.length;

@@ -3,10 +3,10 @@
 /**
  * 闭区间[start,end]的抽象
  */
-class Interval1D{
-  constructor(start,end){
-    this.start = Math.min(start,end)
-    this.end = Math.max(start,end)
+class Interval1D {
+  constructor(start, end) {
+    this.start = Math.min(start, end)
+    this.end = Math.max(start, end)
   }
 
   /**
@@ -16,11 +16,15 @@ class Interval1D{
    */
   intersection(interval) {
     var start = interval.start,
-    end = interval.end
+      end = interval.end
 
     if (start > this.end || end < this.start) return false
 
-    return new Interval1D(Math.max(start,this.start),Math.min(end,this.end))
+    return new Interval1D(Math.max(start, this.start), Math.min(end, this.end))
+  }
+
+  contains(x) {
+    return x >= this.start && x <= this.end;
   }
 }
 
@@ -30,16 +34,16 @@ class Interval1D{
 // var ret = interval1.intersection(interval2)
 // console.dir(ret)
 
-const N = 5
-var intervals = []
-for (let i = 0;i < N;i++){
-  let interval = new Interval1D(Math.random() * 10 >> 0,Math.random() * 20 >> 0)
-  intervals.push(interval)
-}
-console.log(intervals)
-for (let i = 0;i < intervals.length;i++){
-  for(let j = i + 1;j < intervals.length;j++){
-    let set = intervals[i].intersection(intervals[j])
-    set && console.log(set)
-  }
-}
+// const N = 5
+// var intervals = []
+// for (let i = 0;i < N;i++){
+//   let interval = new Interval1D(Math.random() * 10 >> 0,Math.random() * 20 >> 0)
+//   intervals.push(interval)
+// }
+// console.log(intervals)
+// for (let i = 0;i < intervals.length;i++){
+//   for(let j = i + 1;j < intervals.length;j++){
+//     let set = intervals[i].intersection(intervals[j])
+//     set && console.log(set)
+//   }
+// }

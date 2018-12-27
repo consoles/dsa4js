@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>1.2.10</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <script src="./point.js"></script>
+    <script src="./canvas.js"></script>
+    <script src="./chart.js"></script>
+</head>
+
+<body>
+    <canvas width="600" height="600"></canvas>
+    <p>编写一个类VisualCounter，支持加一和减一操作。它的构造函数接受两个参数N和max，其中N指定了 操作的最大次数，max指定了计数器的最大绝对值。作为副作用，用图像显示每次计数器变化后的值</p>
+    <script>
+        const canvas = new Canvas(document.querySelector('canvas').getContext('2d'));
+
+
+        class Counter {
+            constructor(max, n) {
+                this.value = 0;
+                this.actCount = 0;
+                this.maxCount = n;
+                this.max = max;
+            }
+
+            incr() {
+                if (this.actCount > this.maxCount || this.value > this.max) return;
+                this.actCount++;
+                this.value++;
+            }
+
+            decr() {
+                if (this.actCount > this.maxCount || this.value < -this.max) return;
+                this.actCount++;
+                this.value--;
+            }
+        }
+
+        const max = 8;
+        const t = 30;
+
+        const counter = new Counter(max, 10);
+
+        const chart = new Chart(canvas, t, 2 * max);
+
+        for (let i = 0; i < t; i++) {
+            if (Math.random() > 0.3) {
+                counter.incr();
+            } else {
+                counter.decr();
+            }
+            const p = new Point2D(i, counter.value + max);
+            p.text = counter.value;
+            // console.log(p);
+            // 消除负数
+            chart.draw(p);
+        }
+        console.log(counter.value);
+    </script>
+
+</body>
+
+</html>

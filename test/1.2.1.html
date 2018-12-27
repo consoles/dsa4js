@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>1.2.1</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <script src="./point.js"></script>
+    <script src="./canvas.js"></script>
+    <script src="./chart.js"></script>
+</head>
+
+<body>
+    <canvas width="600" height="600"></canvas>
+    <p>编写一个Point2D的用例，从命令行接受一个整数N。在单位正方形内生成N个随机点，然后计算两点之间的最近距离</p>
+    <script>
+        const canvas = new Canvas(document.querySelector('canvas').getContext('2d'));
+        const chart = new Chart(canvas, 1, 1);
+        let count = 5;
+        let minDis = Number.MAX_SAFE_INTEGER;
+        let minPair = null;
+        const points = [];
+
+        while (count--) {
+            const point = new Point2D(Math.random(), Math.random());
+            point.text = count;
+            chart.draw(point);
+
+            for (let p of points) {
+                chart.drawLine(point, p);
+                const dis = point.distance(p);
+                if (dis < minDis) {
+                    minPair = [p, point];
+                    minDis = dis;
+                }
+            }
+            points.push(point);
+        }
+        chart.drawLine(minPair[0], minPair[1], 5);
+    </script>
+
+</body>
+
+</html>

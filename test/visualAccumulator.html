@@ -1,59 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>可视化的累加器</title>
 </head>
 <link rel="stylesheet" href="./css/reset.css">
+
 <body>
   <canvas width="1366" height="768"></canvas>
   <script src="./canvas.js"></script>
   <script>
     var canvas = new Canvas(document.querySelector('canvas').getContext('2d'))
-    class VisualAccumulator{
-      constructor(canvas,trials,max){
+    class VisualAccumulator {
+      constructor(canvas, trials, max) {
         this.count = 0
         this.total = 0
         this.canvas = canvas
 
         this.bounds = {
-          xScale:trials,
-          yScale:max
+          xScale: trials,
+          yScale: max
         }
         this.limit = {
-          left:0,
-          right:1366,
-          top:0,
-          bottom:768
+          left: 0,
+          right: 1366,
+          top: 0,
+          bottom: 768
         }
 
-        this.canvas.drawHorizontalMiddleLine('#0f0',8)
+        this.canvas.drawHorizontalMiddleLine('#ff0', 1)
       }
-      drawValue(value,r,color) {
-        var p = 1000; 
+      drawValue(value, r, color) {
+        var p = 1000;
         var partsY = this.bounds.yScale / p // y轴上的值被平均分成1000份，每份表示为parts
         var pixYPerPart = (this.limit.bottom - this.limit.top) / p
         var pixXPerPart = (this.limit.right - this.limit.left) / this.bounds.xScale
         var posY = this.limit.bottom - (value / partsY) * pixYPerPart // value落在哪个区间？
         var posX = this.limit.left + this.count * pixXPerPart
         // console.log('x',posX,'y',posY)
-        this.canvas.drawPoint(posX,posY,r,color)
+        this.canvas.drawPoint(posX, posY, r, color)
       }
       addDataValue(value) {
         this.count++
         this.total += value
         this.drawValue(value)
-        this.drawValue(this.total / this.count,5,'#f00')
+        this.drawValue(this.total / this.count, 5, '#f00')
       }
     }
     const T = 10000
-    var a = new VisualAccumulator(canvas,T,1)
-    for(let i = 0;i < T;i++){
+    var a = new VisualAccumulator(canvas, T, 1)
+    for (let i = 0; i < T; i++) {
       a.addDataValue(Math.random())
     }
-    setInterval(function(){
+    setInterval(function () {
       location.reload()
     }, 1e3)
   </script>
 </body>
+
 </html>

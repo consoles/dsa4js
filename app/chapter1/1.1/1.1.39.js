@@ -11,7 +11,7 @@
 
 const _ = require('lodash');
 
-const { binarySearch } = require('../binarySearch');
+const { binarySearch } = require('../../binarySearch');
 
 const test = t => {
 

@@ -1,7 +1,7 @@
 // 二分查找与暴力查找。根据1.1.10.4节给出的暴力查找法编写一个程序 BruteForceSearch，在你的计算机上比较它和 BinarySearch处理largeW.txt 和 largeT.txt所需的时间。
 // 数据文件 链接: https://pan.baidu.com/s/1OtvDSHm87s7W4uQVdQuslg 提取码: yy2j 
 
-const { readInts } = require('../util');
+const { readInts } = require('../../util');
 
 console.time('read numbers1000000');
 const numbers1000000 = readInts('/Users/yiihua-013/Downloads/1.1.38/largeW.txt');
@@ -19,7 +19,7 @@ const find = (arr, key) => {
     return -1;
 }
 
-const { binarySearch } = require('../binarySearch');
+const { binarySearch } = require('../../binarySearch');
 
 console.time('普通查找 numbers1000000');
 find(numbers1000000, 122922297);

@@ -6,7 +6,7 @@ const matrix = [
     [9, 10, 11, 12]
 ];
 
-const { print, println } = require('../util');
+const { print, println } = require('../../util');
 
 const invert = matrix => {
     const M = matrix.length;
