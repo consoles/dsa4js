@@ -50,7 +50,7 @@ $ mocha
 
 ### 背包
 
-一种不支持从中删除元素的集合数据类型——它的目的就是帮助用例收集元素并迭代遍历所有收集到的元素（用例也可以检查背包是否为空或者背包中元素的数量）。迭代的顺序不确定且和用例无关，这种类型在js中原生的实现就是Set。
+一种不支持从中删除元素的集合数据类型——它的目的就是帮助用例收集元素并迭代遍历所有收集到的元素（用例也可以检查背包是否为空或者背包中元素的数量）。迭代的顺序不确定且和用例无关。
 
 ### 队列
 
@@ -77,28 +77,65 @@ FIFO是公平性的体现。
 
 匹配括号是否成对出现。`[()]{}{[()()]()}`为true，而`[(])`为false。与双栈法求值算法类似：遇到左括号(`(`,`[`或者`{`)的时候入栈，遇到右括号的时候出栈判断匹配问题。
 
-### 洗牌算法的正确性证明
+#### 括号补全问题
 
-洗牌也就是排列，把这n张牌任意排列，总共有n!种。为了保证随机，那么我的洗牌策略，不管怎么洗，都应该是1/n!。
+从标准输入得到一个缺少左括号的表达式并打印出补全括号之后的中序表达式。`1 + 2 ) * 3 - 4 ) * 5 - 6 ) ) )` => `((1 + 2) * ((3 - 4) * (5 - 6)))`
 
-Fisher–Yates shuffle算法的正确性：
+- 使用两个栈分别保存数值和操作符，分别为opStack和valueStack。顺序处理输入字符串的字符：
+- 如果为操作符，压入opStack。
+- 否则，如果为右括号，从valueStack取出两个操作数，从opStack取出1个操作符，添加括号组合后压入valueStack。
+- 否则，为数字，压入valueStack。
+以上处理办法需要输出满足以下条件，也就是有如下的假设：输入表达式是合法的。
 
-第一张牌抽取的概率为1/n,第二张牌是1/(n-1),....，第i张牌概率是1/(n-i),..。那么这种洗牌策略的概率是1/n*1/(n-1)*1/(n-2)*...*1/1，即1/n!
+#### 中缀转后缀
 
-下面这种经常被写错的算法：
+与算术表达式求值使用的算法一样，值栈和符号栈。扫描字符
+- 忽略左括号
+- 遇到数字压入valueStack
+- 遇到符号压入opStack
+- 遇到右括号从valueStack中弹出2个操作数，从opStack中弹出一个操作符，计算后缀表达式压入valueStack
+- 最后valueStack中的值就是后缀表达式
+
+#### 后缀表达式求值
+
+- 思路类似双栈法，但是扫描字符串的时候遇到操作符的时候就需要计算结果了，可以省掉opStack
+- 遇到数字压入valueStack
+- 遇到操作符从valueStack中弹出2个元素，并进行相关操作后压入valueStack
+- 后缀表达式的值就是栈顶的值
+
+#### 环形链表实现的队列
 
 ```js
-function worseShuffle(arr) {
-    const n = arr.length;
-    for (let i = 0; i < n; i++) {
-        let r = _.random(0, n - 1);
-        [arr[i], arr[r]] = [arr[r], arr[i]];
+class Queue {
+    constructor() {
+        this.last = null;
     }
-    return arr;
+    enqueue(item) {
+        const node = new Node(item);
+        if (this.last == null) {
+            this.last = node;
+            node.next = node;
+        } else {
+            node.next = this.last.next;
+            this.last.next = node;
+            this.last = node;
+        }
+    }
+    dequeue() {
+        if (this.isEmpty()) return null;
+        const item = this.last.next.value;
+        if (this.last.next == this.last) {
+            this.last = null;
+        } else {
+            this.last.next = this.last.next.next;
+        }
+        return item;
+    }
+    isEmpty() {
+        return this.last === null;
+    }
 }
 ```
-
-这种算法相当于放回取样，概率为 1 / n ^ n,并不能保证真正的公平。
 
 ### 参考资料
 

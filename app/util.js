@@ -4,6 +4,8 @@
  * 算法练习，参考：https://github.com/jimmysuncpt/Algorithms.git
  */
 
+const ListNode = require('./Node');
+
 module.exports = {
   counter: {
     binomial: 0,
@@ -299,5 +301,34 @@ module.exports = {
   readInts(path) {
     const rl = require('readlines');
     return rl.readlinesSync(path).filter(x => x.length > 0).map(x => parseInt(x));
+  },
+  createLinkedList(arr) {
+    const len = arr.length;
+    if (len === 0) return null;
+    var head = new ListNode(arr[0]);
+    var current = head;
+    for (let i = 1; i < len; i++) {
+      current.next = new ListNode(arr[i]);
+      current = current.next; // 将current指针指向刚刚创建的新的节点
+    }
+    return head;
+  },
+  printLinkedList(head) {
+    var current = head;
+    var text = '';
+    while (current != null) {
+      text += current.value + ' -> ';
+      current = current.next;
+    }
+    text += 'NULL';
+    console.log(text);
+  },
+  findNode(head, value) {
+    let cur = head;
+    while (cur) {
+      if (cur.value == value) return cur;
+      cur = cur.next;
+    }
+    return null;
   }
 };

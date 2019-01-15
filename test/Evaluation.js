@@ -1,7 +1,7 @@
 'use strict'
 
-class Evaluation{
-  constructor(){
+class Evaluation {
+  constructor() {
     this.opStack = [] // 操作符栈
     this.valueStack = [] // 操作数栈
   }
@@ -25,32 +25,32 @@ class Evaluation{
     return expStr.split(/\s+/g)
   }
 
-  calculate(op,num1,num2) {
+  calculate(op, num1, num2) {
     if (op == '+') return num1 + num2
     if (op == '-') return num1 - num2
     if (op == '*') return num1 * num2
     if (op == '/') return num1 / num2
-    if (op == 'sqrt') return Math.sqrt(num1)  
+    if (op == 'sqrt') return Math.sqrt(num1)
   }
 
   /**
    * 表达式字符串，注意空格分隔
    * ( 1 + ( ( 2 + 3 ) * ( 4 * 5 ) ) )
    */
-  eval(expStr){
+  eval(expStr) {
     var tokens = this.parseExp(expStr)
-    for(let token of tokens) {
+    for (let token of tokens) {
       if (this.isLeftBracket(token)) continue
       if (this.isOperator(token)) this.opStack.push(token)
       else if (this.isRightBracket(token)) {
         var op = this.opStack.pop()
         var v = this.valueStack.pop();
         switch (op) {
-          case '+':v = this.valueStack.pop() + v;break;
-          case '-':v = this.valueStack.pop() - v;break;
-          case '*':v = this.valueStack.pop() * v;break;
-          case '/':v = this.valueStack.pop() / v;break;
-          case 'sqrt':v = Math.sqrt(v);break;
+          case '+': v = this.valueStack.pop() + v; break;
+          case '-': v = this.valueStack.pop() - v; break;
+          case '*': v = this.valueStack.pop() * v; break;
+          case '/': v = this.valueStack.pop() / v; break;
+          case 'sqrt': v = Math.sqrt(v); break;
         }
         this.valueStack.push(v);
       } else this.valueStack.push(Number(token))
@@ -61,13 +61,13 @@ class Evaluation{
    * 中序表达式转化为后序表达式
    * ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) ) )  将转化为1 2 + 3 4 - 5 6 - * * 
    */
-  infixToPostfix (expStr){
+  infixToPostfix(expStr) {
     // 1.忽略左括号
     // 2.遇到数字将其放入值栈
     // 3.遇到符号将其放入符号栈
     // 4.遇到右括号，计算后缀表达式，同时放入值栈
     var tokens = this.parseExp(expStr)
-    for(let token of tokens) {
+    for (let token of tokens) {
       if (this.isOperator(token)) this.opStack.push(token)
       else if (this.isLeftBracket(token)) continue
       else if (this.isRightBracket(token)) {
@@ -86,7 +86,7 @@ class Evaluation{
    * 后序表达式没有括号的问题，处理起来比较简单，使用一个栈即可
    * 1 2 + 3 4 - 5 6 - * * => ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) ) ) => 3
    */
-  evaluatePostfix(postfixExp){
+  evaluatePostfix(postfixExp) {
     var tokens = this.parseExp(postfixExp)
     // 数字放值栈
     // 遇到符号出栈2个操作数，并将计算结果放入值栈
@@ -95,7 +95,7 @@ class Evaluation{
       if (this.isOperator(token)) {
         let num2 = this.valueStack.pop(),
           num1 = this.valueStack.pop()
-        this.valueStack.push(this.calculate(token,num1,num2))  
+        this.valueStack.push(this.calculate(token, num1, num2))
       } else {
         this.valueStack.push(Number(token))
       }
