@@ -2,18 +2,16 @@
 
 'use strict'
 
-let binarySearch = (arr, element) => {
+let binarySearch = (arr, element, fn = (a, b) => a - b) => {
 
 	let start = 0,
 		end = arr.length - 1
 	while (start <= end) {
 		let mid = (start + end) >> 1
-		if (element === arr[mid])
-			return mid
-		if (element > arr[mid])
-			start = mid + 1
-		else
-			end = mid - 1
+		const ret = fn(arr[mid], element);
+		if (ret === 0) return mid;
+		if (ret > 0) end = mid - 1;
+		else start = mid + 1;
 	}
 	return -1
 }

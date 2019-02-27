@@ -330,5 +330,13 @@ module.exports = {
       cur = cur.next;
     }
     return null;
+  },
+  randomArray(min, max, len) {
+    const _ = require('lodash');
+    const arr = [];
+    for (let i = 0; i < len; i++) {
+      arr.push(_.random(min, max));
+    }
+    return arr;
   }
 };
