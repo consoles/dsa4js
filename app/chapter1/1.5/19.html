@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RandomGrid可视化</title>
+</head>
+
+<body>
+    <div style="width:fit-content;margin:auto;">
+        <h1 style="text-align:center">RandomGrid可视化</h1>
+        <div id="main" style="width: 600px;height:600px;padding-bottom: 20px"></div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+    <script>
+        async function render() {
+            try {
+                const { data } = await axios.post('http://127.0.0.1:3000/');
+                const { lines, points } = data;
+                const option = {
+                    xAxis: {
+                        interval: 1,
+                    },
+                    yAxis: {
+                        interval: 1,
+                    },
+                    tooltip: {
+                        // https://www.echartsjs.com/option.html#tooltip
+                        formatter: '({c})'
+                    },
+                    series: [
+                        {
+                            symbolSize: 20,
+                            data: points,
+                            type: 'scatter'
+                        }
+                    ]
+                };
+                for (const line of lines) {
+                    option.series.push({
+                        data: line,
+                        type: 'line',
+                        lineStyle: {
+                            width: 5,
+                            color: 'green'
+                        }
+                    });
+                }
+                const chart = echarts.init(document.getElementById('main'));
+                chart.setOption(option);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        render();
+    </script>
+</body>
+
+</html>

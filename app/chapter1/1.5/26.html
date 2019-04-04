@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Erdös-Renyi 模型的均摊成本图像</title>
+</head>
+
+<body>
+    <div>
+        <p>
+            Erdös-Renyi 模型的均摊成本图像。
+            开发一个用例，从命令行接受一个 int 值 N，
+            在 0 到 N-1 之间产生随机整数对，
+            调用 connected() 判断它们是否相连，
+            如果不是则用 union() 方法（和我们的开发用例一样）。
+            不断循环直到所有触点互通。
+            按照正文的样式将所有操作的均摊成本绘制成图像。
+        </p>
+    </div>
+    <div style="margin: 10px auto;" id="app">
+        <label for="n">请输入数字</label>
+        <input type="number" name="n" id="n" value="10">
+        <button onclick="render()">生成图像</button>
+    </div>
+    <div style="width:fit-content;margin:auto;">
+        <h1 style="text-align:center">均摊成本图像</h1>
+        <div id="main1" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+        <div id="main2" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+        <div id="main3" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+        <div id="main4" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+    </div>
+
+
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+    <script>
+        async function render() {
+            try {
+                const n = document.getElementById('n').value;
+                const { data } = await axios.get('http://127.0.0.1:3000/data?n=' + n);
+                const keys = Object.keys(data);
+                for (let i = 0; i < keys.length; i++) {
+                    const desc = keys[i];
+                    const points = data[desc];
+                    const option = {
+                        title: {
+                            text: desc
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        xAxis: {
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            }
+                        },
+                        yAxis: {
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            },
+                            scale: true
+                        },
+                        series: [{
+                            data: points,
+                            type: 'scatter'
+                        }]
+                    };
+                    const el = document.getElementById(`main${i + 1}`);
+                    const chart = echarts.init(el);
+                    chart.setOption(option);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+
+</html>

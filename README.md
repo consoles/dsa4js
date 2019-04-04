@@ -140,3 +140,4 @@ class Queue {
 ### 参考资料
 
 - [《算法》](https://github.com/aistrate/AlgorithmsSedgewick)
+- [算法4的数据文件](http://git-hexo-blog.oss-cn-beijing.aliyuncs.com/algs4-data.zip)

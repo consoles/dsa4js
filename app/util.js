@@ -300,7 +300,15 @@ module.exports = {
   },
   readInts(path) {
     const rl = require('readlines');
-    return rl.readlinesSync(path).filter(x => x.length > 0).map(x => parseInt(x));
+    const lines = rl.readlinesSync(path).filter(x => x.length > 0);
+    const arr = [];
+    for (const line of lines) {
+      const ints = line.split(/\s+/).map(x => parseInt(x)).filter(x => Number.isInteger(x));
+      for (const int of ints) {
+        arr.push(int);
+      }
+    }
+    return arr;
   },
   createLinkedList(arr) {
     const len = arr.length;
