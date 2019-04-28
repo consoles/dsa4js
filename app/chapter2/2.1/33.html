@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>2.1.33 分布图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.11/lodash.js"></script>
+</head>
+
+<body>
+    <p>对你为练习2.1.33给出的测试用例，在一个无穷循环中调用sort()方法将由第三个命令行参数指定大小的数组排序，记录每次排序用时并绘制平均运行时间，得到一张运行时间的分布图
+    </p>
+    <div style="width:fit-content;margin:auto;">
+        <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+    </div>
+</body>
+<script>
+    const time = (fn, T, n) => {
+        let total = 0;
+        for (let i = 0; i < T; i++) {
+            const array = [];
+            for (let i = 0; i < n; i++) {
+                array.push(Math.random());
+            }
+            const start = Date.now();
+            fn.call(null, array);
+            total += (Date.now() - start);
+        }
+        return total / T;
+    }
+    const swap = (arr, i, j) => {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    let selectionSort = arr => {
+        for (let i = 0; i < arr.length; i++) {
+            let minIndex = i
+            // 比较的次数为n-1-i次
+            for (let j = i + 1; j < arr.length; j++)
+                if (arr[j] < arr[minIndex])
+                    minIndex = j
+            // swap函数调用了n次（0~n-1）
+            swap(arr, i, minIndex)
+        }
+        return arr
+    }
+
+    let insertSort = arr => {
+        for (let i = 1; i < arr.length; i++)
+            // insert a[i] into arr[i-1],arr[i-2],arr[i-3],...,arr[0]
+            for (let j = i; j > 0 && arr[j] < arr[j - 1]; j--)
+                swap(arr, j, j - 1)
+        return arr
+    }
+
+    let shellSort = arr => {
+        for (let gap = arr.length >> 1; gap > 0; gap >>= 1)
+            for (let i = gap; i < arr.length; i++)
+                for (let j = i; j >= gap && arr[j] < arr[j - gap]; j -= gap)
+                    swap(arr, j, j - gap)
+        return arr
+    }
+
+    const sortFns = [selectionSort, insertSort, shellSort];
+
+    const chart = echarts.init(document.getElementById('main'));
+
+    const T = 10;
+    const step = 1000;
+
+    const xAxisData = [];
+    const counter = {};
+
+    const option = {
+        title: {
+            text: '排序算法运行时间曲线图'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: _.flatMap(sortFns.map(x => [x.name, x.name + '平均值']))
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: xAxisData
+        },
+        yAxis: {
+            type: 'value'
+        }
+    };
+
+    let i = 100;
+
+    const timer = setInterval(() => {
+        xAxisData.push(i);
+        for (let j = 0; j < sortFns.length; j++) {
+            let fn = sortFns[j];
+            const fnName = fn.name;
+            if (!counter[fnName]) {
+                counter[fnName] = {
+                    time: [],
+                    avgTime: []
+                };
+            }
+            const t = time(fn, T, i);
+            counter[fnName].time.push(t);
+            const times = counter[fnName].time;
+            const sum = _.sum(times);
+            counter[fnName].avgTime.push(sum / times.length);
+            const series = Object.keys(counter).map(name => ({ name, symbolSize: 20, type: 'scatter', data: counter[name].time })).concat(Object.keys(counter).map(n => ({ name: n + '平均值', type: 'line', data: counter[n].avgTime })));
+            option.series = series;
+            chart.setOption(option);
+        }
+        i++;
+    }, 10);
+</script>
+
+</html>

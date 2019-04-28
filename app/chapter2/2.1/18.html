@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动画</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p>
+            2.1.18
+        </p>
+        <p>
+            可视轨迹。修改你为上一题给出的解答，为插入排序和选择排序生成和正文中类似的可视轨迹。提示：使用 setYscale()
+            函数是一个明智的选择。附加题：添加必要的代码，与正文中的图片一样用红色和灰色强调不同角色的元素。
+        </p>
+        <button v-on:click="selectionSort">选择排序</button>
+        <button v-on:click="insertionSort">插入排序</button>
+    </div>
+    <div style="width:fit-content;margin:auto;">
+        <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+    </div>
+    <script>
+
+        const option = {
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                markArea: {
+                    data: [[{
+                        xAxis: 0
+                    }, {
+                        xAxis: 0
+                    }]]
+                }
+            }]
+        };
+
+        const chart = echarts.init(document.getElementById('main'));
+
+        new Vue({
+            el: '#app',
+            data: {
+                arr: [5, 2, 1, 3, 4, 8, 6, 7],
+                isAnimation: false,
+            },
+            methods: {
+                sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+                async selectionSort() {
+                    if (this.isAnimation) return alert('动画中，请稍后...');
+
+                    this.isAnimation = true;
+                    const arr = this.arr.slice();
+                    option.series[0].data = arr;
+                    chart.setOption(option);
+
+                    for (let i = 0; i < arr.length; i++) {
+                        let minIndex = i;
+                        for (let j = i + 1; j < arr.length; j++) {
+                            if (arr[j] < arr[minIndex]) {
+                                minIndex = j;
+                            }
+                        }
+                        if (minIndex !== i) {
+                            [arr[minIndex], arr[i]] = [arr[i], arr[minIndex]];
+                        }
+                        chart.setOption(option);
+                        option.series[0].markArea.data[0][1].xAxis = i;
+                        await this.sleep(1000);
+                    }
+                    option.series[0].markArea.data[0][1].xAxis = this.arr.length;
+                    chart.setOption(option);
+                    this.isAnimation = false;
+                    alert('selectionSort done');
+                },
+                async insertionSort() {
+                    if (this.isAnimation) return alert('动画中，请稍后...');
+                    this.isAnimation = true;
+                    const arr = this.arr.slice();
+                    option.series[0].data = arr;
+                    chart.setOption(option);
+                    for (let i = 1; i < arr.length; i++) {
+                        for (let j = i; j > 0 && arr[j] < arr[j - 1]; j--) {
+                            [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]];
+                            await this.sleep(1000);
+                            chart.setOption(option);
+                        }
+                        await this.sleep(1000);
+                        chart.setOption(option);
+                    }
+                    this.isAnimation = false;
+                    alert('insertionSort done');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

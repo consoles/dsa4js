@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动画</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p>
+            2.1.17
+        </p>
+        <p>
+            动画。修改插入排序和选择排序的代码，使之将数组内容绘制成正文中所示的棒状图。在每一轮排序后重绘图片来产生动画效果，并以一张“有序”的图片作为结束，即所有的圆棒均已按照高度有序排列。提示：使用类似于正文中的用例来随机生成Double值，在排序代码的适当位置调用show()
+            方法，并在 show() 方法中清理画布并绘制棒状图。
+        </p>
+        <button v-on:click="selectionSort">选择排序</button>
+        <button v-on:click="insertionSort">插入排序</button>
+    </div>
+    <div style="width:fit-content;margin:auto;">
+        <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+    </div>
+    <script>
+
+        const option = {
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [120, 200, 150, 80, 70, 110, 130],
+                type: 'bar',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                }
+            }],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            }
+        };
+
+        const chart = echarts.init(document.getElementById('main'));
+
+        new Vue({
+            el: '#app',
+            data: {
+                arr: [5, 2, 1, 3, 4, 8, 6, 7],
+                isAnimation: false,
+            },
+            methods: {
+                sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+                async selectionSort() {
+                    if (this.isAnimation) return alert('动画中，请稍后...');
+
+                    this.isAnimation = true;
+                    const arr = this.arr.slice();
+                    option.series[0].data = arr;
+
+                    for (let i = 0; i < arr.length; i++) {
+                        let minIndex = i;
+                        chart.setOption(option);
+                        for (let j = i + 1; j < arr.length; j++) {
+                            if (arr[j] < arr[minIndex]) {
+                                minIndex = j;
+                            }
+                        }
+                        if (minIndex !== i) {
+                            [arr[minIndex], arr[i]] = [arr[i], arr[minIndex]];
+                        }
+                        await this.sleep(1000);
+                        chart.setOption(option);
+                    }
+                    this.isAnimation = false;
+                    alert('selectionSort done');
+                },
+                async insertionSort() {
+                    if (this.isAnimation) return alert('动画中，请稍后...');
+                    this.isAnimation = true;
+                    const arr = this.arr.slice();
+                    option.series[0].data = arr;
+                    chart.setOption(option);
+                    for (let i = 1; i < arr.length; i++) {
+                        for (let j = i; j > 0 && arr[j] < arr[j - 1]; j--) {
+                            [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]];
+                            await this.sleep(1000);
+                            chart.setOption(option);
+                        }
+                        await this.sleep(1000);
+                        chart.setOption(option);
+                    }
+                    this.isAnimation = false;
+                    alert('insertionSort done');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

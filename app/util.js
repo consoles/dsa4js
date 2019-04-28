@@ -346,5 +346,44 @@ module.exports = {
       arr.push(_.random(min, max));
     }
     return arr;
+  },
+  randomDoubleArray(len) {
+    const arr = [];
+    while (len--) {
+      arr.push(Math.random());
+    }
+    return arr;
+  },
+  sortedArray(len) {
+    const arr = [];
+    for (let i = 0; i < len; i++) {
+      arr.push(i);
+    }
+    return arr;
+  },
+  sortedDescArray(len) {
+    const arr = [];
+    while (len--) {
+      arr.push(len);
+    }
+    return arr;
+  },
+  twoElementsArray(len) {
+    const arr = [];
+    while (len--) {
+      arr.push(Math.random() > .5 ? 1 : 0);
+    }
+    return arr;
+  },
+  sameArray(len) {
+    return new Array(len).fill(0);
+  },
+  isSorted(arr) {
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] < arr[i - 1]) {
+        return false;
+      }
+    }
+    return true;
   }
 };
