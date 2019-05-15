@@ -109,6 +109,45 @@ let mergeSort = arr => {
 	return merge(mergeSort(left), mergeSort(right))
 }
 
+/**
+ * 将[start,mid],[mid+1,end]的数组归并，形成一个大的有序数组arr[start...end]
+ */
+const merge = (arr, start, mid, end) => {
+	const aux = [];
+	let i = start;
+	let j = mid + 1;
+	for (let k = start; k <= end; k++) {
+		if (i > mid) {
+			aux.push(arr[j++]);
+		} else if (j > end) {
+			aux.push(arr[i++]);
+		} else if (arr[i] < arr[j]) {
+			aux.push(arr[i++]);
+		} else {
+			aux.push(arr[j++]);
+		}
+	}
+	for (let i = 0; i < aux.length; i++) {
+		arr[start + i] = aux[i];
+	}
+}
+
+/**
+ * 自底向上的归并排序
+ */
+const mergeSortBottomUp = arr => {
+	const n = arr.length;
+	for (let sz = 1; sz < n; sz *= 2) {
+		for (let start = 0; start < n - sz; start += 2 * sz) {
+			// 归并 arr[start...start+2*sz)
+			const left = start;
+			const right = Math.min(start + 2 * sz - 1, n - 1);// 防止右侧越界
+			const mid = start + sz - 1;
+			merge(arr, left, mid, right);
+		}
+	}
+};
+
 exports.selectionSort = selectionSort
 exports.insertSort = insertSort
 exports.bubbleSort = bubbleSort

@@ -12,14 +12,6 @@ module.exports = {
     betterBinomial: 0
   },
   _readline: require('readline'),
-  toBinaryString: function (number) {
-    var s = '';
-    if (number === 0) s = '0';
-    for (var i = number; i > 0; i >>= 1) {
-      s = (i % 2) + s;
-    }
-    return s;
-  },
   fib: function (endNumber) {
     var f = 0,
       g = 1;
@@ -214,11 +206,6 @@ module.exports = {
       }
     }).on('close', function () {
       callback(data)
-    })
-  },
-  readInts: function (inputStream, callback) {
-    module.exports.readLines(inputStream, function (data) {
-      callback(data.map(d => Number(d)).filter(d => !!d))
     })
   },
   binarySearch: require('./binarySearch').binarySearch,

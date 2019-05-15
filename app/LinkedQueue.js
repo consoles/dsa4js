@@ -22,6 +22,10 @@ class LinkedQueue {
         return ret;
     }
 
+    getHead(){
+      return this.head.value;
+    }
+
     enqueue(item) {
 
         const node = new Node(item);

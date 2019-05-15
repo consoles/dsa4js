@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>2.2.6</title>
+  <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+</head>
+
+<body>
+<p>计算自顶向下和自底向上的归并排序访问数组的准确次数</p>
+<p>使用这个程序将N=1至512的结果绘制成曲线图，并将其和上限6N*lgN比较</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script>
+  class Merger {
+    constructor(arr) {
+      this.arr = arr;
+      this.count = 0;
+    }
+
+    merge(start, mid, end) {
+      const aux = [];
+      let i = start, j = mid + 1;
+      for (let k = start; k <= end; k++) {
+        if (i > mid) {
+          aux.push(this.arr[j++]);
+        } else if (j > end) {
+          aux.push(this.arr[i++]);
+        } else if (this.arr[i] < this.arr[j]) {
+          this.count++;
+          aux.push(this.arr[i++]);
+        } else {
+          this.count++;
+          aux.push(this.arr[j++]);
+        }
+        this.count++;
+      }
+      for (let i = 0; i < aux.length; i++) {
+        this.arr[i + start] = aux[i];
+        this.count += 2;
+      }
+    }
+  }
+
+  class MergeSortTopDown extends Merger {
+
+    constructor(arr) {
+      super(arr);
+    }
+
+    sort() {
+      this._mergeSort(0, this.arr.length - 1);
+    }
+
+    _mergeSort(start, end) {
+      if (end <= start) return;
+      const mid = start + parseInt((end - start) / 2);
+      this._mergeSort(start, mid);
+      this._mergeSort(mid + 1, end);
+      this.merge(start, mid, end);
+    }
+  }
+
+  class MergeSortBottomUp extends Merger {
+    constructor(arr) {
+      super(arr);
+    }
+
+    sort() {
+      const n = this.arr.length;
+      for (let sz = 1; sz < n; sz *= 2) {
+        for (let start = 0; start < n - sz; start += 2 * sz) {
+          const mid = start + sz - 1;
+          const end = Math.min(n - 1, mid + sz);
+          this.merge(start, mid, end);
+        }
+      }
+    }
+  }
+
+  const bottomUpCounts = [];
+  const topDownCounts = [];
+  const stdCounts = [];
+  const xData = [];
+  // gen data
+  for (let i = 1; i <= 1024; i++) {
+    const arr1 = [];
+    for (let j = 0; j < i; j++) {
+      arr1.push(Math.random());
+    }
+    const arr2 = arr1.slice();
+    const mergeSortBottomUp = new MergeSortBottomUp(arr1);
+    const mergeSortTopDown = new MergeSortTopDown(arr2);
+
+    mergeSortBottomUp.sort();
+    mergeSortTopDown.sort();
+
+    const bottomUpCount = mergeSortBottomUp.count;
+    const topDownCount = mergeSortTopDown.count;
+    const std = parseInt(6 * i * Math.log2(i));
+
+    xData.push(i);
+    bottomUpCounts.push(bottomUpCount);
+    topDownCounts.push(topDownCount);
+    stdCounts.push(std);
+  }
+
+  const option = {
+    xAxis: {
+      type: 'category',
+      data: xData
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      name: '自顶向下',
+      data: topDownCounts,
+      type: 'line',
+      // label: {
+      //     normal: {
+      //         show: true,
+      //         position: 'top'
+      //     }
+      // }
+    }, {
+      name: '自底向上',
+      data: bottomUpCounts,
+      type: 'line',
+      // label: {
+      //     normal: {
+      //         show: true,
+      //         position: 'top'
+      //     }
+      // }
+    }, {
+      name: '6N*lgN',
+      data: stdCounts,
+      type: 'line',
+      // label: {
+      //     normal: {
+      //         show: true,
+      //         position: 'top'
+      //     }
+      // }
+    }],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+      }
+    }
+  };
+
+  const chart = echarts.init(document.getElementById('main'));
+  chart.setOption(option);
+</script>
+</body>
+
+</html>

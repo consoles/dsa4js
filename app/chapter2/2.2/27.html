@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>子数组长度</title>
+</head>
+<body>
+<p>
+  用归并排序将大型随机数组排序，根据经验用N（某次归并时两个数组长度之和）的函数估计当一个数组用净的时候另一个数组的平均长度
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="../../../node_modules/echarts-stat/dist/ecStat.js"></script>
+<script>
+
+  const counter = {};
+
+  function _merge(arr, aux, start, mid, end) {
+    const n = end - start + 1;
+    counter[n] = counter[n] || [];
+    for (let k = start; k <= end; k++) {
+      aux[k] = arr[k];
+    }
+    let i = start, j = mid + 1;
+    let firstOutOfBounds = true;
+    for (let k = start; k <= end; k++) {
+      if (i > mid) {
+        const restLen = end - j + 1;
+        arr[k] = aux[j++];
+        if (firstOutOfBounds) {
+          counter[n].push(restLen);
+          firstOutOfBounds = false;
+        }
+      } else if (j > end) {
+        const restLen = mid - i + 1;
+        arr[k] = aux[i++];
+        if (firstOutOfBounds) {
+          counter[n].push(restLen);
+          firstOutOfBounds = false;
+        }
+      } else if (aux[i] < aux[j]) {
+        arr[k] = aux[i++];
+      } else {
+        arr[k] = aux[j++];
+      }
+    }
+  }
+
+  function _mergeSort(arr, aux, start, end) {
+    if (start >= end) return;
+
+    const mid = start + parseInt((end - start) / 2);
+    _mergeSort(arr, aux, start, mid);
+    _mergeSort(arr, aux, mid + 1, end);
+    _merge(arr, aux, start, mid, end);
+  }
+
+  function mergeSort(arr) {
+    const aux = arr.slice();
+    _mergeSort(arr, aux, 0, arr.length - 1);
+  }
+
+  for (let n = 1024; n < 1024 * 1e2; n += 1e3) {
+    const arr = [];
+    for (let i = 0; i < n; i++) {
+      arr.push(Math.random());
+    }
+    mergeSort(arr);
+  }
+
+  const points = [];
+
+  for (let n in counter) {
+    let sum = counter[n].reduce((p, c) => p + c);
+    let avg = sum / counter[n].length;
+    points.push([n, avg]);
+  }
+
+  const myRegression = ecStat.regression('logarithmic', points);
+
+  myRegression.points.sort(function (a, b) {
+    return a[0] - b[0];
+  });
+
+  const option = {
+    title: {
+      text: '剩余数组长度和归并数组长度的关系',
+      subtext: 'By ecStat.regression',
+      sublink: 'https://github.com/ecomfe/echarts-stat',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
+    xAxis: {
+      type: 'value',
+      splitLine: {
+        lineStyle: {
+          type: 'dashed'
+        }
+      },
+      splitNumber: 20
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: {
+        lineStyle: {
+          type: 'dashed'
+        }
+      }
+    },
+    series: [{
+      name: 'scatter',
+      type: 'scatter',
+      label: {
+        emphasis: {
+          show: true,
+          position: 'left',
+          textStyle: {
+            color: 'blue',
+            fontSize: 16
+          }
+        }
+      },
+      data: points
+    }, {
+      name: 'line',
+      type: 'line',
+      showSymbol: false,
+      smooth: true,
+      data: myRegression.points,
+      markPoint: {
+        itemStyle: {
+          normal: {
+            color: 'transparent'
+          }
+        },
+        label: {
+          normal: {
+            show: true,
+            position: 'left',
+            formatter: myRegression.expression,
+            textStyle: {
+              color: '#333',
+              fontSize: 14
+            }
+          }
+        },
+        data: [{
+          coord: myRegression.points[myRegression.points.length - 1]
+        }]
+      }
+    }]
+  };
+
+  const chart = echarts.init(document.getElementById('main'));
+  chart.setOption(option);
+</script>
+</body>
+</html>
