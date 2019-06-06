@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>子数组的大小</title>
+</head>
+<body>
+<p>
+  编写一个程序，在快排处理大小为N的数组的过程中，当子数组的大小小于M时排序方法需要切换为插入排序。将子数组的大小绘制成直方图。用N=10^5,M=10,20和50测试你的程序
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./26.series.json');
+    const option = {
+      xAxis: {
+        type: 'category',
+        data: ['10', '20', '50']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: data
+    };
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+  }
+
+  render();
+</script>
+</body>
+</html>

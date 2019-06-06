@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>切换为插入排序</title>
+</head>
+<body>
+<p>
+  用实验对比以下处理小数组的方法和练习2.3.25的处理方法的效果：在快排中直接忽略小数组，仅在快排结束后运行一次插入排序。注意：可以通过这些实验估计出电脑缓存的大小，因为当数组大小超过缓存时这种方法方法的性能可能下降
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  // 数组长度为28比较合适
+  async function render() {
+    const {data} = await axios.post('./27.series.json');
+    const option = {
+      xAxis: {
+        type: 'category'
+      },
+      yAxis: {
+        type: 'value'
+      },
+
+      series: data,
+      tooltip: {
+      }
+    };
+
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

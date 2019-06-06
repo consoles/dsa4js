@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>运行时间直方图</title>
+</head>
+<body>
+<p>
+  编写一个程序，接收命令行参数N和T，用快排对大小为N的随机浮点数数组进行T次试验，并将所有运行时间绘制成直方图。令N=10^3~10^6,为了使曲线更平滑，T值越大越好。这个联系最关键的地方在于找到适当的比例绘制实验结果
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./31.echarts.option.json');
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(data);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

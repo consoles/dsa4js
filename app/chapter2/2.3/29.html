@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>随机化</title>
+</head>
+<body>
+<p>
+  用经验性的研究对比随机选择切分元素和正文所述的一开始就将数组随机化这两种策略的效果。在子数组大小为M时进行切换，将大小为N的不重复数组进行排序，其中M=10,20,50,N = 10^3~10^6
+</p>
+<h1>经验表明：每次随机选择一个标定点性能更优，预先的shuffle是一个特别费时的操作尽管只需要进行一次</h1>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./29.series.json');
+
+    const option = {
+      xAxis: {
+        type: 'category',
+        data: ['10^3', '10^4', '10^5', '10^6']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      legend: {
+        data: data.map(x => x.name)
+      },
+      series: data,
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+          type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+        }
+      }
+    };
+
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

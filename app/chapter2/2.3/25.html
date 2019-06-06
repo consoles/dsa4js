@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>切换为插入排序</title>
+</head>
+<body>
+<p>
+  实现一个快排，在子数组元素少于M时切换到插入排序。用快排处理大小N分别为10^3,10^4,10^5,10^6的随机数组，根据经验给出使其在你的计算机上运行速度最快的M值，将M从0变化到30的每个值所得到的平均运行时间绘制成曲线。注意：你需要为算法2.2天假一个需要3个参数的sort()方法以使`Insertion.sort(arr,lo,hi)`将子数组arr[lo...hi]排序</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./25.series.json');
+
+    const option = {
+      xAxis: {
+        type: 'category',
+        data: ['10^3', '10^4', '10^5', '10^6']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      legend: {
+        data: ['5', '6', '7', '8', '9', '10']
+      },
+      series: data,
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+          type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        }
+      }
+    };
+
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

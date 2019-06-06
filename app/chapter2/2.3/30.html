@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>极端情况</title>
+</head>
+<body>
+<p>
+  用初始随机化和非初始随机化的快排测试练习2.1.35和练习2.1.36中描述的大型非随机数据。在将这些大数组排序时，乱序对快排的性能有何影响
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./30.echarts.option.json');
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(data);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

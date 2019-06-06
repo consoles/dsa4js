@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>递归深度</title>
+</head>
+<body>
+<p>
+  用经验性的研究估计切换阈值为M的快排在将大小为N的不重复数组排序时的平均递归深度，其中M=10，20和50,N=10^3,10^4,10^5,10^6
+</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./28.series.json');
+
+    const option = {
+      xAxis: {
+        type: 'category',
+        data: ['10^3', '10^4', '10^5', '10^6']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      // legend: {
+      //   data:data.map(x => x.name)
+      // },
+      series: data,
+      tooltip: {
+        trigger: 'axis'
+      }
+    };
+
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+  }
+
+  render();
+
+</script>
+</body>
+</html>

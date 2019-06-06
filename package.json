@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/lodash": "^4.14.121",
     "echarts": "^4.1.0",
-    "echarts-stat": "^1.1.1"
+    "echarts-stat": "^1.1.1",
+    "probability-distributions": "^0.9.1"
   }
 }
