@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>使用蒙特卡洛模拟求pi</title>
+  <script src="../../node_modules/two.js/build/two.js"></script>
+</head>
+<body>
+<script>
+  const two = new Two({
+    fullscreen: true,
+    autostart: true
+  }).appendTo(document.body);
+  const squareSide = 400;
+  const x = 300;
+  const y = 300;
+  const r = squareSide / 2;
+  const offsetX = squareSide - x;
+  const offsetY = squareSide - y;
+  const n = 10000;
+  const square = two.makeRectangle(x, y, squareSide, squareSide);
+  const circle = two.makeCircle(x, y, r);
+  circle.stroke = 'orangered';
+  circle.linewidth = 3;
+
+  let count = 0;
+  let insideCount = 0;
+
+  two.bind('update', function () {
+    if (count > n) return;
+    count++;
+    const pointX = offsetX + Math.random() * squareSide;
+    const pointY = offsetY + Math.random() * squareSide;
+    const point = two.makeCircle(pointX, pointY, 2);
+    // 点在圆内？
+    let color = 'green';
+    if ((pointX - x) ** 2 + (pointY - y) ** 2 <= r ** 2) {
+      color = 'blue';
+      insideCount++;
+      console.log('pi = ', 4 * insideCount / count);
+    }
+    point.fill = color;
+    point.noStroke();
+  });
+</script>
+</body>
+</html>

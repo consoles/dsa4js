@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>随机分钱问题</title>
+</head>
+<body>
+<p>房间里有100个人，每个人有100元钱，他们在玩一个游戏。在每轮游戏中，每个人都要拿出一元钱随机给另一个人。经过一段时间后，这100个人的财富分布是怎样的</p>
+<p>物理学中的热量模型：能量是固定的，能量的传递过程中一定会让熵越来越大</p>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  const chart = echarts.init(document.getElementById('main'));
+  // 初始的时候每个人有100元
+  const money = new Array(100).fill(100);
+  const len = money.length;
+  const speed = 50; // 游戏速率，值越大游戏进程越快
+  const allowDebt = true; // 允许负债
+  const option = {
+    xAxis: {
+      type: 'category'
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      data: money,
+      type: 'bar'
+    }],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    }
+  };
+
+  // 财富值呈现幂指分布，但是并不代表每次财富最多的是同一个人
+  async function render() {
+    money.sort((a, b) => a - b);
+    chart.setOption(option);
+
+    for (let k = 0; k < speed; k++) {
+      // 每个人随机给其他人一块钱
+      for (let i = 0; i < len; i++) {
+        let j = 0;
+        while (true) {
+          j = Math.floor(Math.random() * len);
+          if (j !== i) {
+            break;
+          }
+        }
+        // 不能欠钱
+        if (allowDebt || (!allowDebt && money[i] > 0)) {
+          money[i] -= 1;
+          money[j] += 1;
+        }
+      }
+    }
+  }
+
+  // 帧率25
+  const delay = 40;
+  setInterval(render, delay);
+</script>
+</body>
+</html>
