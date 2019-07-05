@@ -104,7 +104,7 @@ debugger;
 // let n = 1000;
 // let last = 0;
 // while (true) {
-//   const arr = randomDoubleArray(n);
+//   const arr = genRandomDoubleArray(n);
 //   const start = Date.now();
 //   sampleSort(arr, 8);
 //   const time = Date.now() - start;

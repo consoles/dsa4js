@@ -4,7 +4,7 @@
 const assert = require('assert');
 
 const swap = require('../../swap');
-const {shuffle, isSorted, randomDoubleArray} = require('../../util');
+const {shuffle, isSorted, genRandomDoubleArray} = require('../../util');
 const {insertSort} = require('../../sort');
 
 function partition(arr, l, r) {
@@ -42,7 +42,7 @@ for (let m = 1;m <= 100;m++) {
   const num = 1e5;
   let sum = 0;
   for (let i = 0;i < times;i++) {
-    const arr = randomDoubleArray(num);
+    const arr = genRandomDoubleArray(num);
     const start = Date.now();
     quickSortIgnoreLittleArr(arr,m);
     sum += (Date.now() - start);

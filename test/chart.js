@@ -3,16 +3,16 @@
 // canvas坐标系左上角(0,0)这个修改为笛卡尔坐标系，左下角是(0,0)
 class Chart {
   constructor(canvas, xScale = 1, yScale = 1) {
-    this.canvas = canvas
-    this.xScale = xScale
-    this.yScale = yScale
+    this.canvas = canvas;
+    this.xScale = xScale;
+    this.yScale = yScale;
 
     this.bounds = {
       left: 0,
       top: 0,
       right: 600,
       bottom: 600
-    }
+    };
 
     const pixPerPartX = (this.bounds.right - this.bounds.left) / this.xScale;
     const pixPerPartY = (this.bounds.bottom - this.bounds.top) / this.yScale;
@@ -31,7 +31,7 @@ class Chart {
     const x = point.x,
       y = point.y,
       r = point.r,
-      color = point.color
+      color = point.color;
 
     const posX = this.bounds.left + this.pixPerPart.x * x;
     const posY = this.bounds.bottom - this.pixPerPart.y * y;
@@ -53,18 +53,14 @@ class Chart {
    * 画单位矩形的子集
    */
   drawRect(width, height, left = 0, bottom = 0) {
-    // 判断点落在第几个区间
-    const countX = width / this.accuracy.x
-    const countY = height / this.accuracy.y
+    const w = this.pixPerPart.x * width;
+    const h = this.pixPerPart.y * height;
 
-    const w = this.pixPerPart.x * countX
-    const h = this.pixPerPart.y * countY
-
-    const posX = this.bounds.left + this.pixPerPart.x * (left / this.accuracy.x);
-    const posY = this.bounds.bottom - h - this.pixPerPart.y * (bottom / this.accuracy.y);
+    const posX = this.bounds.left + this.pixPerPart.x * left;
+    const posY = this.bounds.bottom - h - this.pixPerPart.y * bottom;
 
     // 确定矩形的左上角坐标和宽高即可
-    this.canvas.drawRect(posX, posY, w, h, this.getRandomColor())
+    this.canvas.drawRect(posX, posY, w, h, this.getRandomColor());
     this.canvas.fillText(`${w} * ${h}`, posX, posY);
   }
 

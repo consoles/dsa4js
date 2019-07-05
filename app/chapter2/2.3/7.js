@@ -1,7 +1,7 @@
 // 在使用快排将N个不重复的元素排序的时候，计算大小为0,1,2的子数组的数量。
 // 如果你喜欢数学，请推导；如果你不喜欢，请做一些实验并提出猜想
 
-const {shuffle, randomDoubleArray} = require('../../util');
+const {shuffle, genRandomDoubleArray} = require('../../util');
 const swap = require('../../swap');
 
 class QuickSortAnalyze {
@@ -61,7 +61,7 @@ const TEST_COUNT = 20;
 for (const n of nums) {
   const counts = [0, 0, 0];
   for (let i = 0; i < TEST_COUNT; i++) {
-    const arr = randomDoubleArray(n);
+    const arr = genRandomDoubleArray(n);
     const s = new QuickSortAnalyze(arr);
     s.sort();
     counts[0] += s.array0Num;

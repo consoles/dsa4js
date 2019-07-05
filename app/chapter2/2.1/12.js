@@ -4,7 +4,7 @@
 // 验证该值是一个小常数，数组大小按照 10 的幂次递增，不小于 100。
 
 const swap = require('../../swap');
-const { randomDoubleArray } = require('../../util');
+const { genRandomDoubleArray } = require('../../util');
 
 const shellSort = arr => {
 
@@ -38,7 +38,7 @@ const shellSort = arr => {
 let n = 10 ** 2;
 
 while (true) {
-    const arr = randomDoubleArray(n);
+    const arr = genRandomDoubleArray(n);
     const counter = shellSort(arr);
     console.log('array size = ', n);
     for (const h in counter) {

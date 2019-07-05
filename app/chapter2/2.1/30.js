@@ -12,7 +12,7 @@
 const assert = require('assert');
 
 const swap = require('../../swap');
-const { isSorted, randomDoubleArray } = require('../../util');
+const { isSorted, genRandomDoubleArray } = require('../../util');
 
 // 可以传入递增序列的希尔排序
 const shellSort = (arr, seq) => {
@@ -32,7 +32,7 @@ const shellSort = (arr, seq) => {
 
 const n = 10e6;
 
-const arr = randomDoubleArray(n);
+const arr = genRandomDoubleArray(n);
 
 for (let i = 2; i <= n; i++) {
     const seq = [1];

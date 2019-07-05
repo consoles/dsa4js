@@ -42,7 +42,7 @@ module.exports = {
       return arr[num - 1];
     };
 
-    var fibs = Array.from({ length: endNumber }, _ => 0);
+    var fibs = Array.from({length: endNumber}, _ => 0);
     return fib(endNumber, fibs);
   },
   /**
@@ -73,7 +73,7 @@ module.exports = {
    * 如果arr中的值均在[0,number)，返回数组中的所有元素之和应该和arr.length相等
    */
   histogram: function (arr, number) {
-    var result = Array.from({ length: number }, _ => 0);
+    var result = Array.from({length: number}, _ => 0);
     for (let n of arr) n >= 0 && n < number && result[n]++;
     return result;
   },
@@ -183,12 +183,12 @@ module.exports = {
         matrix[n][k] = (1 - p) * bin(n - 1, k, p) + p * bin(n - 1, k - 1, p);
       }
       return matrix[n][k];
-    }
+    };
 
     // 初始化二维矩阵全-1
     var matrix = new Array(n + 1);
     for (let i = 0; i < n + 1; i++) {
-      matrix[i] = Array.from({ length: k + 1 }, _ => -1);
+      matrix[i] = Array.from({length: k + 1}, _ => -1);
     }
 
     return bin(n, k, p)
@@ -196,13 +196,13 @@ module.exports = {
   readLines: function (inputStream, callback) {
     var opts = {
       input: inputStream
-    }
-    var rl = module.exports._readline.createInterface(opts)
+    };
+    var rl = module.exports._readline.createInterface(opts);
     var data = [];
     rl.on('line', function (line) {
       if (line) {
-        line = line.trim()
-        data.push(line)
+        line = line.trim();
+        data.push(line);
       }
     }).on('close', function () {
       callback(data)
@@ -334,36 +334,12 @@ module.exports = {
     }
     return arr;
   },
-  randomDoubleArray(len) {
+  genRandomDoubleArray(len) {
     const arr = [];
     while (len--) {
       arr.push(Math.random());
     }
     return arr;
-  },
-  sortedArray(len) {
-    const arr = [];
-    for (let i = 0; i < len; i++) {
-      arr.push(i);
-    }
-    return arr;
-  },
-  sortedDescArray(len) {
-    const arr = [];
-    while (len--) {
-      arr.push(len);
-    }
-    return arr;
-  },
-  twoElementsArray(len) {
-    const arr = [];
-    while (len--) {
-      arr.push(Math.random() > .5 ? 1 : 0);
-    }
-    return arr;
-  },
-  sameArray(len) {
-    return new Array(len).fill(0);
   },
   isSorted(arr) {
     for (let i = 1; i < arr.length; i++) {
@@ -372,5 +348,35 @@ module.exports = {
       }
     }
     return true;
+  },
+  genArrAsc(len) {
+    const arr = this.genRandomDoubleArray(len);
+    arr.sort((a, b) => a - b);
+    return arr;
+  },
+  genArrDesc(len) {
+    const arr = this.genRandomDoubleArray(len);
+    arr.sort((a, b) => b - a);
+    return arr;
+  },
+  genArrSame(len) {
+    const value = Math.random();
+    return new Array(len).fill(value);
+  },
+  genTwoElementsArr(len) {
+    const v1 = Math.random();
+    let v2 = 0;
+    while (true) {
+      let v = Math.random();
+      if (v !== v1) {
+        v2 = v;
+        break;
+      }
+    }
+    const ret = [];
+    for (let i = 0; i < len; i++) {
+      ret.push(Math.random() > .5 ? v1 : v2);
+    }
+    return ret;
   }
 };

@@ -10,7 +10,7 @@
 const assert = require('assert');
 
 const swap = require('../../swap');
-const { randomDoubleArray, isSorted } = require('../../util');
+const { genRandomDoubleArray, isSorted } = require('../../util');
 
 const shellSort = arr => {
 
@@ -55,7 +55,7 @@ const shellSort2 = arr => {
 };
 
 const n = 20e4;
-const arr = randomDoubleArray(n);
+const arr = genRandomDoubleArray(n);
 const arr1 = arr.slice();
 const arr2 = arr.slice();
 

@@ -1,6 +1,6 @@
 // 编写一段代码来计算Cn的准确值，在N=100,1000和10000的情况下比较准确值和估计2NlnN的差距
 
-const {shuffle, randomDoubleArray} = require('../../util');
+const {shuffle, genRandomDoubleArray} = require('../../util');
 const swap = require('../../swap');
 
 class QuickSortAnalyze {
@@ -55,7 +55,7 @@ const TEST_COUNT = 10;
 for (const num of nums) {
   let sum = 0;
   for (let i = 0; i < TEST_COUNT; i++) {
-    const arr = randomDoubleArray(num);
+    const arr = genRandomDoubleArray(num);
     const s = new QuickSortAnalyze(arr);
     s.sort();
     sum += s.compareCount;

@@ -7,7 +7,7 @@ const ecStat = require('echarts-stat');
 const util = require('util');
 
 const {quickSort} = require('../../sort');
-const {randomDoubleArray} = require('../../util');
+const {genRandomDoubleArray} = require('../../util');
 
 const T = 10;
 
@@ -23,13 +23,13 @@ function rangeDivide(start, end, len) {
   return arr;
 }
 
-const nums = rangeDivide(10 ** 3, 10 ** 6, 100);
+const nums = rangeDivide(10 ** 3, 10 ** 6, 10);
 
 for (const n of nums) {
   let sum = 0;
   for (let i = 0; i < T; i++) {
 
-    const arr = randomDoubleArray(n);
+    const arr = genRandomDoubleArray(n);
     const start = Date.now();
     quickSort(arr);
     sum += (Date.now() - start);

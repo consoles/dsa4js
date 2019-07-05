@@ -2,7 +2,7 @@
 // 编写一个测试用例，调用sort方法对实际应用中可能出现的困难或者极端情况的数组进行排序。
 // 例如：有序数组、逆序数组、数组中所有主键均相同、数组的主键只有两种的数组
 
-const { sortedArray, sortedDescArray, sameArray, twoElementsArray } = require('../../util');
+const { genArrAsc, genArrDesc, genArrSame, genTwoElementsArr } = require('../../util');
 
 const { selectionSort, insertSort, shellSort } = require('../../sort');
 
@@ -22,7 +22,7 @@ const T = 10;
 console.log('T = ', T);
 while (true) {
     console.log('n = ', n);
-    for (const arrFn of [sortedArray, sortedDescArray, sameArray, twoElementsArray]) {
+    for (const arrFn of [genArrAsc, genArrDesc, genArrSame, genTwoElementsArr]) {
         const arr = arrFn.call(null, n);
         for (const sortFn of [selectionSort, insertSort, shellSort]) {
             const t = time(arr, sortFn, T);
@@ -39,127 +39,127 @@ while (true) {
 
 // T =  10
 // n =  128
-// sortedArray selectionSort 0.5
-// sortedArray insertSort 0.1
-// sortedArray shellSort 0
-// sortedDescArray selectionSort 0
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0
-// sameArray selectionSort 0.3
-// sameArray insertSort 0
-// sameArray shellSort 0.1
-// twoElementsArray selectionSort 0.5
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.1
+// genArrAsc selectionSort 0.5
+// genArrAsc insertSort 0.1
+// genArrAsc shellSort 0
+// genArrDesc selectionSort 0
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0
+// genArrSame selectionSort 0.3
+// genArrSame insertSort 0
+// genArrSame shellSort 0.1
+// genTwoElementsArr selectionSort 0.5
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.1
 
 // n =  256
-// sortedArray selectionSort 0.1
-// sortedArray insertSort 0
-// sortedArray shellSort 0
-// sortedDescArray selectionSort 0.1
-// sortedDescArray insertSort 0.1
-// sortedDescArray shellSort 0
-// sameArray selectionSort 0.1
-// sameArray insertSort 0
-// sameArray shellSort 0
-// twoElementsArray selectionSort 0.1
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0
+// genArrAsc selectionSort 0.1
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0
+// genArrDesc selectionSort 0.1
+// genArrDesc insertSort 0.1
+// genArrDesc shellSort 0
+// genArrSame selectionSort 0.1
+// genArrSame insertSort 0
+// genArrSame shellSort 0
+// genTwoElementsArr selectionSort 0.1
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0
 
 // n =  512
-// sortedArray selectionSort 0.4
-// sortedArray insertSort 0
-// sortedArray shellSort 0
-// sortedDescArray selectionSort 0.5
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0
-// sameArray selectionSort 0.4
-// sameArray insertSort 0
-// sameArray shellSort 0
-// twoElementsArray selectionSort 0.4
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.1
+// genArrAsc selectionSort 0.4
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0
+// genArrDesc selectionSort 0.5
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0
+// genArrSame selectionSort 0.4
+// genArrSame insertSort 0
+// genArrSame shellSort 0
+// genTwoElementsArr selectionSort 0.4
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.1
 
 // n =  1024
-// sortedArray selectionSort 1.4
-// sortedArray insertSort 0
-// sortedArray shellSort 0
-// sortedDescArray selectionSort 1.2
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0
-// sameArray selectionSort 1.1
-// sameArray insertSort 0
-// sameArray shellSort 0.1
-// twoElementsArray selectionSort 1.2
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0
+// genArrAsc selectionSort 1.4
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0
+// genArrDesc selectionSort 1.2
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0
+// genArrSame selectionSort 1.1
+// genArrSame insertSort 0
+// genArrSame shellSort 0.1
+// genTwoElementsArr selectionSort 1.2
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0
 
 // n =  2048
-// sortedArray selectionSort 4.2
-// sortedArray insertSort 0
-// sortedArray shellSort 0.1
-// sortedDescArray selectionSort 3.9
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0
-// sameArray selectionSort 3.9
-// sameArray insertSort 0
-// sameArray shellSort 0.1
-// twoElementsArray selectionSort 3.9
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.1
+// genArrAsc selectionSort 4.2
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0.1
+// genArrDesc selectionSort 3.9
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0
+// genArrSame selectionSort 3.9
+// genArrSame insertSort 0
+// genArrSame shellSort 0.1
+// genTwoElementsArr selectionSort 3.9
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.1
 
 // n =  4096
-// sortedArray selectionSort 15.6
-// sortedArray insertSort 0
-// sortedArray shellSort 0.1
-// sortedDescArray selectionSort 15.4
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0.1
-// sameArray selectionSort 15.1
-// sameArray insertSort 0
-// sameArray shellSort 0.1
-// twoElementsArray selectionSort 15.2
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.1
+// genArrAsc selectionSort 15.6
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0.1
+// genArrDesc selectionSort 15.4
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0.1
+// genArrSame selectionSort 15.1
+// genArrSame insertSort 0
+// genArrSame shellSort 0.1
+// genTwoElementsArr selectionSort 15.2
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.1
 
 // n =  8192
-// sortedArray selectionSort 59.3
-// sortedArray insertSort 0
-// sortedArray shellSort 0.2
-// sortedDescArray selectionSort 61.4
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0.1
-// sameArray selectionSort 61.1
-// sameArray insertSort 0
-// sameArray shellSort 0.1
-// twoElementsArray selectionSort 62.5
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.2
+// genArrAsc selectionSort 59.3
+// genArrAsc insertSort 0
+// genArrAsc shellSort 0.2
+// genArrDesc selectionSort 61.4
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0.1
+// genArrSame selectionSort 61.1
+// genArrSame insertSort 0
+// genArrSame shellSort 0.1
+// genTwoElementsArr selectionSort 62.5
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.2
 
 // n =  16384
-// sortedArray selectionSort 245.1
-// sortedArray insertSort 0.1
-// sortedArray shellSort 0.4
-// sortedDescArray selectionSort 249.9
-// sortedDescArray insertSort 0
-// sortedDescArray shellSort 0.4
-// sameArray selectionSort 245.7
-// sameArray insertSort 0
-// sameArray shellSort 0.4
-// twoElementsArray selectionSort 238.7
-// twoElementsArray insertSort 0
-// twoElementsArray shellSort 0.4
+// genArrAsc selectionSort 245.1
+// genArrAsc insertSort 0.1
+// genArrAsc shellSort 0.4
+// genArrDesc selectionSort 249.9
+// genArrDesc insertSort 0
+// genArrDesc shellSort 0.4
+// genArrSame selectionSort 245.7
+// genArrSame insertSort 0
+// genArrSame shellSort 0.4
+// genTwoElementsArr selectionSort 238.7
+// genTwoElementsArr insertSort 0
+// genTwoElementsArr shellSort 0.4
 
 // n =  32768
-// sortedArray selectionSort 966.5
-// sortedArray insertSort 0.1
-// sortedArray shellSort 0.8
-// sortedDescArray selectionSort 967.1
-// sortedDescArray insertSort 0.1
-// sortedDescArray shellSort 0.8
-// sameArray selectionSort 978
-// sameArray insertSort 0.1
-// sameArray shellSort 0.8
-// twoElementsArray selectionSort 985
-// twoElementsArray insertSort 0.1
-// twoElementsArray shellSort 0.8
+// genArrAsc selectionSort 966.5
+// genArrAsc insertSort 0.1
+// genArrAsc shellSort 0.8
+// genArrDesc selectionSort 967.1
+// genArrDesc insertSort 0.1
+// genArrDesc shellSort 0.8
+// genArrSame selectionSort 978
+// genArrSame insertSort 0.1
+// genArrSame shellSort 0.8
+// genTwoElementsArr selectionSort 985
+// genTwoElementsArr insertSort 0.1
+// genTwoElementsArr shellSort 0.8

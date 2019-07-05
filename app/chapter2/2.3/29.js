@@ -6,7 +6,7 @@ const assert = require('assert');
 const _ = require('lodash');
 
 const swap = require('../../swap');
-const {isSorted, randomDoubleArray, shuffle} = require('../../util');
+const {isSorted, genRandomDoubleArray, shuffle} = require('../../util');
 const {insertSortWithRange} = require('../../sort');
 
 class QuickSort {
@@ -95,7 +95,7 @@ for (const m of mArr) {
     let sum1 = 0;
     let sum2 = 0;
     for (let i = 0; i < times; i++) {
-      const arr = randomDoubleArray(num);
+      const arr = genRandomDoubleArray(num);
       const sorter = new QuickSort(arr, m);
       let start = Date.now();
       sorter.sortRandomPivot();

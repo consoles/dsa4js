@@ -5,7 +5,7 @@
 const assert = require('assert');
 
 const swap = require('../../swap');
-const {shuffle, isSorted, randomDoubleArray} = require('../../util');
+const {shuffle, isSorted, genRandomDoubleArray} = require('../../util');
 const {insertSort} = require('../../sort');
 
 class QuickSort {
@@ -57,7 +57,7 @@ for (const m of mArr) {
   for (const num of numArr) {
     let sum = 0;
     for (let i = 0; i < times; i++) {
-      const arr = randomDoubleArray(num);
+      const arr = genRandomDoubleArray(num);
       const sorter = new QuickSort(arr, m);
       sorter.sort();
       sum += sorter.depth;

@@ -2,7 +2,7 @@
 
 const swap = require('../../swap');
 
-const { randomDoubleArray } = require('../../util');
+const { genRandomDoubleArray } = require('../../util');
 
 const insertSort = arr => {
 
@@ -27,7 +27,7 @@ const insertSort = arr => {
 };
 
 const insertSort2 = require('../../sort').insertSort;
-const arr = randomDoubleArray(100000);
+const arr = genRandomDoubleArray(100000);
 
 let start = Date.now();
 insertSort(arr);
