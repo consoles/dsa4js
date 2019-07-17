@@ -321,7 +321,7 @@ module.exports = {
   findNode(head, value) {
     let cur = head;
     while (cur) {
-      if (cur.value == value) return cur;
+      if (cur.value === value) return cur;
       cur = cur.next;
     }
     return null;
@@ -378,5 +378,11 @@ module.exports = {
       ret.push(Math.random() > .5 ? v1 : v2);
     }
     return ret;
+  },
+  randomInt(min, max) {
+    return parseInt(min + Math.random() * (max - min + 1));
+  },
+  randomDate(startDate, endDate) {
+    return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
   }
 };

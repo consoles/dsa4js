@@ -190,9 +190,26 @@ function _partition(arr, lo, hi) {
   return j;
 }
 
+function _partition2(arr, lo, hi) {
+  const v = arr[lo];
+  // arr[l+1...j] < v;arr[j+1...i) > v
+  let j = lo;
+  // 从左向右扫描
+  for (let i = lo + 1; i <= hi; i++) {
+    // 如果当前元素小于标定点，则将当前元素和大于v的第一个元素交换，当前元素融入了小于v的部分
+    if (arr[i] < v) {
+      swap(arr, ++j, i);
+    }
+    // 如果当前元素大于v则融入到大于v的部分i自增就行了
+  }
+  swap(arr, lo, j);
+  return j;
+}
+
 function _quickSort(arr, lo, hi) {
   if (hi <= lo) return;
-  const j = _partition(arr, lo, hi);
+  // const j = _partition(arr, lo, hi);
+  const j = _partition2(arr, lo, hi);
   _quickSort(arr, lo, j - 1);
   _quickSort(arr, j + 1, hi);
 }
@@ -231,6 +248,40 @@ const quickSort3Ways = arr => {
   _quickSort3Ways(arr, 0, arr.length - 1);
 };
 
+function heapSort(arr) {
+  function _less(arr, i, j) {
+    return arr[i - 1] - arr[j - 1] < 0;
+  }
+
+  function _swap(arr, i, j) {
+    [arr[i - 1], arr[j - 1]] = [arr[j - 1], arr[i - 1]];
+  }
+
+  function _sink(arr, k, n) {
+    while (2 * k <= n) {
+      let j = 2 * k;
+      if (j < n && _less(arr, j, j + 1)) {
+        j++;
+      }
+      if (_less(arr, k, j)) {
+        _swap(arr, j, k);
+        k = j;
+      } else {
+        break;
+      }
+    }
+  }
+
+  let n = arr.length;
+  for (let k = parseInt(n / 2); k >= 1; k--) {
+    _sink(arr, k, n);
+  }
+  while (n > 1) {
+    _swap(arr, 1, n--);
+    _sink(arr, 1, n);
+  }
+}
+
 exports.selectionSort = selectionSort;
 exports.insertSort = insertSort;
 exports.insertSortWithRange = insertSortWithRange;
@@ -241,6 +292,7 @@ exports.shellSort2 = shellSort2;
 exports.quickSort = quickSort;
 exports.quickSort3Ways = quickSort3Ways;
 exports.quickSortWithRange = quickSortWithRange;
+exports.heapSort = heapSort;
 
 exports.sortCompare = (n, t, ...sortFns) => {
 

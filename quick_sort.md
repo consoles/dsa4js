@@ -49,6 +49,23 @@ function _partition(arr, lo, hi) {
   return j;
 }
 
+// 这种partition由一个指针从左向右扫描，对于完全相同的元素，复杂度退化为O(N^2)，解决方案是上面的双路快排
+function _partition2(arr, lo, hi) {
+  const v = arr[lo];
+  // arr[l+1...j] < v;arr[j+1...i) > v
+  let j = lo;
+  // 从左向右扫描
+  for (let i = lo + 1; i <= hi; i++) {
+    // 如果当前元素小于标定点，则将当前元素和大于v的第一个元素交换，当前元素融入了小于v的部分
+    if (arr[i] < v) {
+      swap(arr, ++j, i);
+    }
+    // 如果当前元素大于v则融入到大于v的部分i自增就行了
+  }
+  swap(arr, lo, j);
+  return j;
+}
+
 function _quickSort(arr, lo, hi) {
   if (hi <= lo) return;
   const j = _partition(arr, lo, hi);
@@ -570,4 +587,79 @@ function quickBest(n) {
 let ret = quickBest(3); // 1,0,2
 ret = quickBest(5); // 2,1,0,3,4
 ret = quickBest(6); // 2,1,0,4,3,5
+```
+
+### 对数组求select
+
+将数组重新排列，使得arr[k]正好是第k小的元素，k从0开始。具体思路类似二分查找，先切分，如果切分位置小于k，那么有半部分继续切分，否则左半部分继续切分，直到切分位置正好等于k，直接返回arr[k]。注意：整个过程*不需要对数组进行全部排序*。
+
+```js
+class QuickPedantic {
+  sort(arr) {
+    shuffle(arr);
+    this._sort(arr, 0, arr.length - 1);
+  }
+
+  _sort(arr, lo, hi) {
+    if (lo >= hi) return;
+    const j = this._partition(arr, lo, hi);
+    this._sort(arr, lo, j - 1);
+    this._sort(arr, j + 1, hi);
+  }
+
+  _partition(arr, lo, hi) {
+    const v = arr[lo];
+    let i = lo, j = hi + 1;
+    while (true) {
+      while (arr[++i] < v) {
+        if (i === hi) {
+          break;
+        }
+      }
+      while (arr[--j] > v) {
+        if (j === lo) {
+          break;
+        }
+      }
+      if (i >= j) {
+        break;
+      }
+      swap(arr, i, j);
+    }
+    swap(arr, j, lo);
+    return j;
+  }
+
+  select(arr, k) {
+    assert(k >= 0 && k < arr.length, 'selected elements out of bounds');
+    shuffle(arr);
+    let lo = 0, hi = arr.length - 1;
+    while (hi > lo) {
+      const i = this._partition(arr, lo, hi);
+      if (i > k) {
+        hi = i - 1;
+      } else if (i < k) {
+        lo = i + 1;
+      } else {
+        return arr[i];
+      }
+    }
+    return arr[lo];
+  }
+
+  select2(arr, k) {
+    assert(k >= 0 && k < arr.length, 'selected elements out of bounds');
+    return this._select2(arr, k, 0, arr.length - 1);
+  }
+
+  /**
+   * 递归版本
+   */
+  _select2(arr, k, lo, hi) {
+    if (lo >= hi) return arr[lo];
+    const j = this._partition(arr, lo, hi);
+    if (j === k) return arr[j];
+    return j > k ? this._select2(arr, k, lo, j - 1) : this._select2(arr, k, j + 1, hi);
+  }
+}
 ```

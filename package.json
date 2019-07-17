@@ -34,7 +34,9 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "@antv/g": "^3.4.6",
     "@types/lodash": "^4.14.121",
+    "axios": "^0.19.0",
     "echarts": "^4.1.0",
     "echarts-stat": "^1.1.1",
     "probability-distributions": "^0.9.1",

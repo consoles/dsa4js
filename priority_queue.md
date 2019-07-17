@@ -1022,3 +1022,245 @@ class DWayMaxHeap {
   }
 }
 ```
+
+# 优先队列与任务调度和负载均衡
+
+从标准输入读取任务和运行时间，按照最短时间优先的原则准备调度计划，将所有任务分配给M个处理器并使得所有任务完成所需要的时间最少。
+
+```js
+class MinPQ {
+  constructor() {
+    this._data = [-1];
+    this.sz = 0;
+  }
+
+  insert(value) {
+    const sz = ++this.sz;
+    this._data[sz] = value;
+    this._swim(sz);
+  }
+
+  _swim(k) {
+    while (k > 1) {
+      const parentIndex = k >> 1;
+      if (this._less(k, parentIndex)) {
+        this._swap(parentIndex, k);
+        k = parentIndex;
+      } else {
+        break;
+      }
+    }
+  }
+
+  _less(i, j) {
+    return this._data[i].compareTo(this._data[j]) < 0;
+  }
+
+  _swap(i, j) {
+    [this._data[i], this._data[j]] = [this._data[j], this._data[i]];
+  }
+
+  _sink(k) {
+    const sz = this.sz;
+    while (2 * k <= sz) {
+      let j = 2 * k;
+      if (j < sz && this._less(j + 1, j)) {
+        j++;
+      }
+      if (this._less(j, k)) {
+        this._swap(k, j);
+        k = j;
+      } else {
+        break;
+      }
+    }
+  }
+
+  delMin() {
+    const item = this._data[1];
+    const sz = this.sz--;
+    this._swap(sz, 1);
+    this._sink(1);
+    return item;
+  }
+
+  isEmpty() {
+    return this.sz === 0;
+  }
+}
+
+class Job {
+  constructor(name, time) {
+    this.name = name;
+    this.time = time;
+  }
+
+  compareTo(other) {
+    return this.time - other.time;
+  }
+}
+
+class Processor {
+  constructor(name) {
+    this.name = name;
+    this.jobs = [];
+    this.busyTime = 0;
+  }
+
+  addJob(job) {
+    this.jobs.push(job);
+    this.busyTime += job.time;
+  }
+
+  compareTo(other) {
+    return this.busyTime - other.busyTime;
+  }
+}
+
+class LPT {
+  constructor(numOfProcessor) {
+    const pq = new MinPQ();
+    for (let i = 0;i < numOfProcessor;i++) {
+      pq.insert(new Processor('processor-' + i));
+    }
+    this.pq = pq;
+  }
+
+  dispatchJob(job) {
+    const processor = this.pq.delMin();
+    processor.addJob(job);
+    this.pq.insert(processor);
+    console.log(processor.name, 'get the job', job.name, 'job.time = ', job.time, 'processor busy time = ', processor.busyTime);
+  }
+}
+
+const jobs = [1,2,9,5,7,8,4,3,6].map((value,index) => new Job('job' + index,value)).sort((a,b) => a.compareTo(b));
+const lpt = new LPT(3);
+for (const job of jobs) {
+  lpt.dispatchJob(job);
+}
+
+// processor-0 get the job job0 job.time =  1 processor busy time =  1
+// processor-2 get the job job1 job.time =  2 processor busy time =  2
+// processor-1 get the job job7 job.time =  3 processor busy time =  3
+// processor-0 get the job job6 job.time =  4 processor busy time =  5
+// processor-2 get the job job3 job.time =  5 processor busy time =  7
+// processor-1 get the job job8 job.time =  6 processor busy time =  9
+// processor-0 get the job job4 job.time =  7 processor busy time =  12
+// processor-2 get the job job5 job.time =  8 processor busy time =  15
+// processor-1 get the job job2 job.time =  9 processor busy time =  18
+```
+
+# 稳定的优先队列
+
+针对重复的元素，认为后添加的元素比较大。
+
+思路：在插入元素的时候同时记录插入的顺序，比较的时候将插入顺序也纳入比较。对于值一样的元素插入顺序在前面的元素比较小，交换的时候需要注意同时交换插入的顺序。
+
+```js
+class MaxPQ {
+  constructor() {
+    this.data = [-1];
+    this.seq = [-1]; // 元素的插入顺序
+    this.sz = 0;
+  }
+
+  _swap(i, j) {
+    [this.data[i], this.data[j]] = [this.data[j], this.data[i]];
+    [this.seq[i], this.seq[j]] = [this.seq[j], this.seq[i]];
+  }
+
+  _less(i, j) {
+    const diff = this.data[i].compareTo(this.data[j]);
+    return diff === 0 ? this.seq[i] < this.seq[j] : diff < 0;
+  }
+
+  _swim(k) {
+    while (k > 1) {
+      const parentIndex = k >> 1;
+      if (this._less(parentIndex, k)) {
+        this._swap(parentIndex, k);
+        k = parentIndex;
+      } else {
+        break;
+      }
+    }
+  }
+
+  insert(item) {
+    const sz = ++this.sz;
+    this.data[sz] = item;
+    this.seq[sz] = sz;
+    this._swim(sz);
+  }
+
+  _sink(k) {
+    const sz = this.sz;
+    while (2 * k <= sz) {
+      let j = 2 * k;
+      if (j < sz && this._less(j, j + 1)) {
+        j++;
+      }
+      if (this._less(k, j)) {
+        this._swap(k, j);
+        k = j;
+      } else {
+        break;
+      }
+    }
+  }
+
+  delMax() {
+    const item = this.data[1];
+    const sz = this.sz--;
+    this._swap(1, sz);
+    this._sink(1);
+    this.data[sz] = null;
+    this.seq[sz] = 0;
+    return item;
+  }
+
+  isEmpty(){
+    return this.sz === 0;
+  }
+}
+
+class Item {
+  constructor(index, value) {
+    this.index = index;
+    this.value = value;
+  }
+
+  compareTo(other) {
+    return this.value - other.value;
+  }
+}
+
+const items = [2, 1, 2, 1, 3, 4, 3, 5, 7, 8, 5, 2, 1].map((value, index) => new Item(index, value));
+const q = new MaxPQ();
+for (const item of items) {
+  q.insert(item);
+}
+
+while (!q.isEmpty()) {
+  console.log(q.delMax());
+}
+```
+
+输出结果：
+
+```bash
+Item { index: 9, value: 8 }
+Item { index: 8, value: 7 }
+Item { index: 10, value: 5 }
+Item { index: 7, value: 5 }
+Item { index: 5, value: 4 }
+Item { index: 6, value: 3 }
+Item { index: 4, value: 3 }
+Item { index: 11, value: 2 }
+Item { index: 2, value: 2 }
+Item { index: 0, value: 2 }
+Item { index: 12, value: 1 }
+Item { index: 3, value: 1 }
+Item { index: 1, value: 1 }
+```
