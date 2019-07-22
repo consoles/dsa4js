@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>归并排序可视化</title>
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html, body {
+      overflow: hidden;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div style="width:fit-content;margin:10px auto;">
+  <p>自顶向下的归并排序可以将数组比较均匀地划分，而自底向上的归并排序则最后一段数组的划分没有那么均匀（后面一段数组可能较小）</p>
+  <p>自顶向下的归排序需要使用递归有额外的函数调用开销，因此虽然自底向上的归并排序数组划分没那么均匀，但是性能反而更优</p>
+  <div id="main"></div>
+</div>
+<script src="./utils.js"></script>
+<script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+<script src="./MergeSortData.js"></script>
+<script>
+  const Canvas = G.Canvas;
+
+  const originOffset = 10;
+  const canvasWidth = 900;
+  const canvasHeight = 500;
+
+  const canvas = new Canvas({
+    containerId: 'main',
+    width: canvasWidth + originOffset,
+    height: canvasHeight + originOffset
+  });
+
+  const xoy = canvas.addGroup();
+  const xAxis = xoy.addShape('line', {
+    attrs: {
+      x1: originOffset,
+      y1: canvasHeight,
+      x2: canvasWidth,
+      y2: canvasHeight,
+      endArrow: true,
+      stroke: '#cc0fc0'
+    }
+  });
+  const yAxis = xoy.addShape('line', {
+    attrs: {
+      x1: originOffset,
+      y1: canvasHeight,
+      x2: originOffset,
+      y2: originOffset,
+      endArrow: true,
+      stroke: '#cc0fc0'
+    }
+  });
+
+  const shapeRectangles = [];
+
+  function render(renderData) {
+    const gap = 5; // 5px的间隔
+    const width = 30;
+
+    for (const {index, value, color} of renderData) {
+      const height = canvasHeight * value;
+      const x = originOffset + (gap + width) * index;
+      const y = canvasHeight - height;
+
+      let shape = shapeRectangles[index];
+      if (!shape) {
+        shape = canvas.addShape('rect', {
+          attrs: {
+            x,
+            y,
+            width,
+            height,
+            fill: color
+          }
+        });
+        shapeRectangles[index] = shape;
+      } else {
+        shape.attr({
+          x,
+          y,
+          width,
+          height,
+          fill: color
+        });
+      }
+    }
+    canvas.draw();
+  }
+
+  (async () => {
+    const sortData = new MergeSortData(24);
+    // const ge = sortData.sortTopDown();
+    const ge = sortData.sortDownTop();
+    for (const renderData of ge) {
+      render(renderData);
+      await $utils.sleep(0.3);
+    }
+  })();
+</script>
+</body>
+</html>

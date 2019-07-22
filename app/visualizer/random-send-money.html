@@ -10,15 +10,14 @@
 <div style="width:fit-content;margin:auto;">
   <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
 </div>
-<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
-<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script src="../../node_modules/echarts/dist/echarts.js"></script>
 <script>
   const chart = echarts.init(document.getElementById('main'));
   // 初始的时候每个人有100元
   const money = new Array(100).fill(100);
   const len = money.length;
   const speed = 50; // 游戏速率，值越大游戏进程越快
-  const allowDebt = true; // 允许负债
+  const allowDebt = false; // 允许负债
   const option = {
     xAxis: {
       type: 'category'

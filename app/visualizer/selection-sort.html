@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>选择排序可视化</title>
+</head>
+<body>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="../../node_modules/echarts/dist/echarts.js"></script>
+<script>
+  const chart = echarts.init(document.getElementById('main'));
+
+  const dataLen = 30;
+  const data = [];
+  for (let i = 0;i< dataLen;i++) {
+    data.push(Math.random());
+  }
+
+  const option = {
+    xAxis: {
+      type: 'category'
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      data,
+      type: 'bar'
+    }],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    }
+  };
+
+  async function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve,ms));
+  }
+
+  async function render() {
+    chart.setOption(option);
+    await sleep(1000);
+    alert('开始排序');
+    // 开始排序
+    const n = data.length;
+    for (let i = 0; i < n; i++) {
+      let minIndex = i;
+      for (let j = i + 1; j < n; j++) {
+        if (data[j] < data[minIndex]) {
+          minIndex = j;
+        }
+      }
+      if (minIndex !== i) {
+        [data[minIndex], data[i]] = [data[i], data[minIndex]];
+        chart.setOption(option);
+        await sleep(1000);
+      }
+    }
+    chart.setOption(option);
+    alert('排序完成');
+  }
+
+  render();
+</script>
+</body>
+</html>

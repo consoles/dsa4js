@@ -238,6 +238,7 @@ function _quickSort3Ways(arr, lo, hi) {
       i++;
     }
   }
+  // 等于标定点的元素就不需要考虑了，如果对于重复元素非常多的数据就能很快跳过相等元素的考察
   // 现在arr[lo...lt-1] < v = arr[lt...gt] < arr[gt+1...hi]
   _quickSort3Ways(arr, lo, lt - 1);
   _quickSort3Ways(arr, gt + 1, hi);
