@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>迷宫自动求解</title>
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div style="width:fit-content;margin:10px auto;">
+  <p>迷宫求解问题等价于图的遍历</p>
+  <p>如果迷宫有多个解，深度优先搜索会返回第一个解，而广度优先搜索求得的是步数最短的解</p>
+  <div id="main"></div>
+</div>
+<script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+<script src="./utils.js"></script>
+<script>
+  class MazeDFS {
+    constructor(mazeJsonData) {
+
+      this.mazeJsonData = mazeJsonData;
+
+      // 上下左右4个方向坐标的偏移
+      this.d = [
+        [-1, 0], // 上
+        [0, 1], // 右
+        [1, 0], // 下
+        [0, -1], // 左
+      ];
+
+      this.WALL_CHAR = '#';
+      this.ROAD_CHAR = ' ';
+      this.WALL_COLOR = '#f00';
+      this.PATH_COLOR = '#0f0';
+      this.ROAD_COLOR = '#fff';
+      this.mazeData = null;
+
+      this.canvasWidth = 666;
+      this.canvasHeight = 666;
+
+      this.rowCount = 0;
+      this.colCount = 0;
+
+      // 迷宫的入口和出口坐标
+      this.startX = 0;
+      this.startY = 0;
+      this.endX = 0;
+      this.endY = 0;
+
+      // 迷宫中每个格子的宽高
+      this.width = 0;
+      this.height = 0;
+
+      // 标记是否访问
+      this.visited = [];
+      // 深度遍历过程中可能的路径
+      this.path = [];
+
+      this.rectangles = [];
+    }
+
+    get visitedCount() {
+      let count = 0;
+      for (let i = 0; i < this.visited.length; i++) {
+        for (let j = 0; j < this.visited[i].length; j++) {
+          if (this.visited[i][j]) {
+            count++;
+          }
+        }
+      }
+      return count;
+    }
+
+    async initData() {
+      const mazeData = this.mazeData = await (await fetch(this.mazeJsonData)).json();
+
+      const {canvasWidth, canvasHeight} = this;
+
+      this.canvas = new G.Canvas({
+        containerId: 'main',
+        width: canvasWidth,
+        height: canvasHeight
+      });
+
+      const rowCount = this.rowCount = mazeData.length;
+      const colCount = this.colCount = mazeData[0].length;
+
+      this.startX = 1;
+      this.startY = 0;
+      this.endX = rowCount - 2;
+      this.endY = colCount - 1;
+
+      this.width = canvasWidth / colCount;
+      this.height = canvasHeight / rowCount;
+
+      for (let i = 0; i < rowCount; i++) {
+        this.visited[i] = new Array(colCount).fill(false);
+        this.path[i] = new Array(colCount).fill(false);
+        this.rectangles[i] = new Array(colCount);
+      }
+    }
+
+    async init() {
+      await this.initData();
+      this.render();
+    }
+
+    makeColor(i, j) {
+      let color = this.mazeData[i][j] === this.WALL_CHAR ? this.WALL_COLOR : this.ROAD_COLOR;
+      if (this.path[i][j]) {
+        color = this.PATH_COLOR;
+      }
+      return color;
+    }
+
+    render() {
+      const {width, height, canvas} = this;
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          let rectangle = this.rectangles[i][j];
+          const attrs = {
+            x: j * width,
+            y: i * height,
+            width,
+            height,
+            fill: this.makeColor(i, j)
+          };
+          if (!rectangle) {
+            rectangle = canvas.addShape('rect', {
+              attrs
+            });
+            this.rectangles[i][j] = rectangle;
+          } else {
+            rectangle.attr(attrs);
+          }
+        }
+      }
+      canvas.draw();
+    }
+
+    inArea(x, y) {
+      return x >= 0 && x < this.rowCount && y >= 0 && y < this.colCount;
+    }
+
+    canGo(x, y) {
+      return this.inArea(x, y) && this.mazeData[x][y] === this.ROAD_CHAR && !this.visited[x][y];
+    }
+
+    /**
+     * 从(x,y)位置开始求解迷宫，返回是否成功求解
+     */
+    * go(x, y) {
+      if (!this.inArea(x, y)) throw new Error(`坐标(${x},${y})不合法`);
+
+      this.visited[x][y] = true;
+
+      // 回溯：记录(x,y)为解
+      this.path[x][y] = true;
+      yield this.render();
+      if (x === this.endX && y === this.endY) {
+        return true;
+      }
+
+      // 向相邻的4个房间继续求解
+      for (const [xOffset, yOffset] of this.d) {
+        const newX = x + xOffset;
+        const newY = y + yOffset;
+        if (this.canGo(newX, newY)) {
+          const success = yield* this.go(newX, newY);
+          if (success) {
+            return true;
+          }
+        }
+      }
+
+      // 回溯：4个方向都尝试过没有得到解，遇到死路就退回去
+      this.path[x][y] = false;
+      yield this.render();
+
+      return false;
+    }
+
+    * solve() {
+      const start = Date.now();
+      const success = yield* this.go(this.startX, this.startY);
+      const elapse = Date.now() - start;
+      alert((success ? '找到迷宫出口' : '没有找到迷宫的解') + ' took ' + elapse + '，扫描节点数' + this.visitedCount);
+    }
+  }
+
+  class MazeDFSNoReverse extends MazeDFS {
+    constructor(mazeJsonData) {
+      super(mazeJsonData);
+      // 非递归的DFS中向前回溯得到的路径
+      this.result = [];
+      this.pathPrevColor = '#f0f';
+    }
+
+    async initData() {
+      await super.initData();
+      for (let i = 0; i < this.rowCount; i++) {
+        this.result[i] = new Array(this.colCount).fill(false);
+      }
+    }
+
+    makeColor(i, j) {
+      let color = super.makeColor(i, j);
+      if (this.result[i][j]) {
+        color = this.pathPrevColor;
+      }
+      return color;
+    }
+
+    * findPath(destination) {
+      let cur = destination;
+      while (cur) {
+        this.result[cur.x][cur.y] = true;
+        yield this.render();
+        cur = cur.prev;
+      }
+    }
+
+    * solve() {
+
+      let success = false;
+
+      const start = Date.now();
+
+      const stack = [];
+      stack.push({x: this.startX, y: this.startY});
+      this.visited[this.startX][this.startY] = true;
+      yield this.render();
+
+      while (stack.length > 0) {
+        const curPos = stack.pop();
+        const {x, y} = curPos;
+        this.path[x][y] = true;
+        yield this.render();
+        if (x === this.endX && y === this.endY) {
+          success = true;
+          // 从终点往回走，找到路径
+          yield* this.findPath(curPos);
+          break;
+        }
+        for (const [xOffset, yOffset] of this.d) {
+          const newX = x + xOffset;
+          const newY = y + yOffset;
+          if (this.canGo(newX, newY)) {
+            stack.push({x: newX, y: newY, prev: curPos});
+            this.visited[newX][newY] = true;
+          }
+        }
+      }
+
+      const elapse = Date.now() - start;
+      alert((success ? '找到迷宫出口' : '没有找到迷宫的解') + ' took ' + elapse + '，扫描节点数' + this.visitedCount);
+    }
+  }
+
+  class Queue {
+    constructor() {
+      this.data = [];
+    }
+
+    enqueue(item) {
+      this.data.push(item);
+    }
+
+    dequeue() {
+      return this.data.shift();
+    }
+
+    isEmpty() {
+      return this.data.length === 0;
+    }
+  }
+
+  // 广度优先遍历使用齐头并进的方式解决问题，直到某一条路径是死路
+  // 广度优先遍历和非递归的深度优先遍历是极其相似的
+  class MazeBFS extends MazeDFSNoReverse {
+    * solve() {
+
+      let success = false;
+
+      const start = Date.now();
+
+      const q = new Queue();
+      q.enqueue({x: this.startX, y: this.startY});
+      this.visited[this.startX][this.startY] = true;
+      yield this.render();
+
+      while (!q.isEmpty()) {
+        const curPos = q.dequeue();
+        const {x, y} = curPos;
+        this.path[x][y] = true;
+        yield this.render();
+        if (x === this.endX && y === this.endY) {
+          success = true;
+          yield* this.findPath(curPos);
+          break;
+        }
+        for (const [xOffset, yOffset] of this.d) {
+          const newX = x + xOffset;
+          const newY = y + yOffset;
+          if (this.canGo(newX, newY)) {
+            q.enqueue({x: newX, y: newY, prev: curPos});
+            this.visited[newX][newY] = true;
+          }
+        }
+      }
+
+      const elapse = Date.now() - start;
+      alert((success ? '找到迷宫出口' : '没有找到迷宫的解') + ' took ' + elapse + '，扫描节点数' + this.visitedCount);
+    }
+  }
+
+  (async () => {
+    // const maze = new MazeDFS('./maze_101_101.json');
+    // const maze = new MazeDFSNoReverse('./maze_101_101.json');
+    const maze = new MazeBFS('./maze_101_101.json');
+    await maze.init();
+
+    const solve = maze.solve();
+
+    for (const s of solve) {
+      await $utils.sleep(0.006);
+    }
+  })();
+</script>
+</body>
+</html>
