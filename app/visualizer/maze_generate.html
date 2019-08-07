@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>随机迷宫生成</title>
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<ul>
+  <li>迷宫生成问题实际上是一个生成树问题</li>
+  <li>图的遍历结果就是一颗生成树，每个节点只访问1次并且没有环</li>
+  <li>深度优先遍历的结果是深度优先树</li>
+  <li>广度优先遍历的结果是广度优先树</li>
+</ul>
+<div style="width:fit-content;margin:10px auto;">
+  <div id="main"></div>
+</div>
+</body>
+<script src="utils.js"></script>
+<script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+<script>
+  class RandomQueue {
+    constructor() {
+      this._data = [];
+    }
+
+    enqueue(value) {
+      this._data.push(value);
+    }
+
+    isEmpty() {
+      return this._data.length === 0;
+    }
+
+    dequeue() {
+      const sz = this._data.length;
+      const index = Math.floor(Math.random() * sz);
+      const item = this._data[index];
+      this._data[index] = this._data[sz - 1];
+      this._data.pop();
+      return item;
+    }
+  }
+
+  /**
+   * 基于链表的随机队列：结合了栈和队列
+   */
+  class RandomQueue2 extends RandomQueue {
+    /**
+     * 随机入队首或者队尾
+     */
+    enqueue(value) {
+      if (Math.random() > .5) {
+        this._data.push(value);
+      } else {
+        this._data.unshift(value);
+      }
+    }
+
+    /**
+     * 随机从队首或者队尾挑选元素
+     */
+    dequeue() {
+      if (Math.random() > .5) {
+        return this._data.pop();
+      }
+      return this._data.shift();
+    }
+  }
+
+  class Maze {
+    constructor(rowCount, colCount) {
+
+      // 在我们的实现中行数和列数一定是奇数
+      // 首行和尾行都是墙，中间的是墙和路交叉，如果有x行路则有x+1行墙，列方向同理
+      if (rowCount % 2 === 0 || colCount % 2 === 0) throw new Error('迷宫的行和列都必须是奇数');
+
+      this.rowCount = rowCount;
+      this.colCount = colCount;
+
+      // 是否隐藏迷宫生成算法？
+      this.mistFlag = true;
+      // this.mistFlag = false;
+
+      const canvasWidth = this.canvasWidth = 666;
+      const canvasHeight = this.canvasHeight = 666;
+
+      this.width = canvasWidth / colCount;
+      this.height = canvasHeight / rowCount;
+
+      this.d = [
+        [-1, 0],
+        [0, 1],
+        [1, 0],
+        [0, -1],
+      ];
+
+      this.canvas = new G.Canvas({
+        containerId: 'main',
+        width: canvasWidth,
+        height: canvasHeight
+      });
+
+      this.startX = 1;
+      this.startY = 0;
+      this.endX = rowCount - 2;
+      this.endY = colCount - 1;
+
+      this.WALL_CHAR = '#';
+      this.ROAD_CHAR = ' ';
+
+      this.WALL_COLOR = '#f00';
+      this.ROAD_COLOR = '#fff';
+
+      this.MIST_COLOR = '#ccc';
+
+      this.PATH_COLOR = '#0f0';
+
+      const maze = [];
+
+      for (let i = 0; i < rowCount; i++) {
+        maze[i] = [];
+        for (let j = 0; j < colCount; j++) {
+          // 横纵坐标都是奇数的时候初始化的时候应该设置为路，唯一的例外是迷宫的入口和出口
+          const c = i % 2 === 1 && j % 2 === 1 ? this.ROAD_CHAR : this.WALL_CHAR;
+          maze[i][j] = c;
+        }
+      }
+
+      this.visited = [];
+      this.inMist = [];
+      this.solvePhaseVisited = [];
+      this.path = [];
+      this.rectangles = [];
+      for (let i = 0; i < rowCount; i++) {
+        this.visited[i] = new Array(colCount).fill(false);
+        this.inMist[i] = new Array(colCount).fill(this.mistFlag);
+        this.solvePhaseVisited[i] = new Array(colCount).fill(false);
+        this.path[i] = new Array(colCount).fill(false);
+        this.rectangles[i] = [];
+      }
+
+      // 入口和出口都是路
+      maze[this.startX][this.startY] = this.ROAD_CHAR;
+      maze[this.endX][this.endY] = this.ROAD_CHAR;
+
+      this.maze = maze;
+    }
+
+    makeColor(i, j) {
+      let color = this.maze[i][j] === this.WALL_CHAR ? this.WALL_COLOR : this.ROAD_COLOR;
+      if (this.inMist[i][j]) {
+        color = this.MIST_COLOR;
+      } else if (this.path[i][j]) {
+        color = this.PATH_COLOR;
+      }
+      return color;
+    }
+
+    // 深度优先遍历
+    * go(x, y) {
+      if (!this.inArea(x, y)) {
+        throw new Error(`(${x},${y}) out of range.`);
+      }
+      console.log(`go (${x},${y})`);
+      this.visited[x][y] = true;
+      for (const [xOffset, yOffset] of this.d) {
+        // 寻找每个节点的相邻节点，因为每2个节点之间都隔着一个墙，所以要乘以2
+        const newX = x + 2 * xOffset;
+        const newY = y + 2 * yOffset;
+        console.log(newX, newY);
+        if (this.inArea(newX, newY) && !this.visited[newX][newY]) {
+          // 打通了墙
+          this.maze[x + xOffset][y + yOffset] = this.ROAD_CHAR;
+          yield this.render();
+          yield* this.go(newX, newY);
+        }
+      }
+    }
+
+    inArea(x, y) {
+      return x >= 0 && x < this.colCount && y >= 0 && y < this.rowCount;
+    }
+
+    // 深度优先的递归实现
+    * run() {
+      // 从(1,1)开始
+      return yield* this.go(this.startX, this.startY + 1);
+    }
+
+    // 深度优先的非递归实现
+    * run2() {
+      const stack = [];
+      stack.push({x: this.startX, y: this.startY + 1});
+      this.visited[this.startX][this.startY + 1] = true;
+
+      while (stack.length > 0) {
+        const cur = stack.pop();
+        const {x, y} = cur;
+        for (const [xOffset, yOffset] of this.d) {
+          const newX = x + 2 * xOffset;
+          const newY = y + 2 * yOffset;
+          if (this.inArea(newX, newY) && !this.visited[newX][newY]) {
+            stack.push({x: newX, y: newY});
+            this.visited[newX][newY] = true;
+            this.maze[x + xOffset][y + yOffset] = this.ROAD_CHAR;
+            yield this.render();
+          }
+        }
+      }
+    }
+
+    // 广度优先遍历（和深度优先遍历的非递归实现非常相似）
+    * run3() {
+      const queue = [];
+      queue.push({x: this.startX, y: this.startY + 1});
+      this.visited[this.startX][this.startY + 1] = true;
+
+      while (queue.length > 0) {
+        const cur = queue.shift();
+        const {x, y} = cur;
+        for (const [xOffset, yOffset] of this.d) {
+          const newX = x + 2 * xOffset;
+          const newY = y + 2 * yOffset;
+          if (this.inArea(newX, newY) && !this.visited[newX][newY]) {
+            queue.push({x: newX, y: newY});
+            this.visited[newX][newY] = true;
+            this.maze[x + xOffset][y + yOffset] = this.ROAD_CHAR;
+            yield this.render();
+          }
+        }
+      }
+    }
+
+    openMist(x, y) {
+      if (!this.inArea(x, y)) {
+        throw new Error(`(${x},${y}) out of range.`);
+      }
+      // 以(x,y)为中心的3*3的九宫格中打开迷雾
+      for (let i = x - 1; i <= x + 1; i++) {
+        for (let j = y - 1; j <= y + 1; j++) {
+          if (this.inArea(i, j)) {
+            this.inMist[i][j] = false;
+          }
+        }
+      }
+    }
+
+    // 基于随机队列的迷宫生成(可以看成随机化的广度优先遍历)
+    * run4() {
+      // const queue = new RandomQueue();
+      const queue = new RandomQueue2(); // 另外一种随机队列，可以一定程素上消除迷宫的解从左上到右下的这样一种趋势
+      queue.enqueue({x: this.startX, y: this.startY + 1});
+      this.visited[this.startX][this.startY + 1] = true;
+      this.openMist(this.startX, this.startY + 1);
+
+      while (!queue.isEmpty()) {
+        const cur = queue.dequeue();
+        const {x, y} = cur;
+        for (const [xOffset, yOffset] of this.d) {
+          const newX = x + 2 * xOffset;
+          const newY = y + 2 * yOffset;
+          if (this.inArea(newX, newY) && !this.visited[newX][newY]) {
+            queue.enqueue({x: newX, y: newY});
+            this.visited[newX][newY] = true;
+            this.openMist(newX, newY);
+            this.maze[x + xOffset][y + yOffset] = this.ROAD_CHAR;
+            yield this.render();
+          }
+        }
+      }
+    }
+
+    /**
+     * 深度优先求解迷宫
+     */
+    * solveDFS() {
+      const success = yield* this._solveDFS(this.startX, this.startY);
+      alert(success ? '找到迷宫的解' : '该迷宫无解');
+    }
+
+    * _solveDFS(x, y) {
+      if (!this.inArea(x, y)) throw new Error(`坐标(${x},${y})不合法`);
+      this.solvePhaseVisited[x][y] = true;
+      this.path[x][y] = true;
+      yield this.render();
+      if (x === this.endX && y === this.endY) {
+        return true;
+      }
+      for (const [xOffset, yOffset] of this.d) {
+        const newX = x + xOffset;
+        const newY = y + yOffset;
+        if (this.inArea(newX, newY) && this.maze[newX][newY] === this.ROAD_CHAR && !this.solvePhaseVisited[newX][newY]) {
+          const success = yield* this._solveDFS(newX, newY);
+          if (success) {
+            return true;
+          }
+        }
+      }
+      // 回溯：4个方向都尝试过没有得到解，遇到死路就退回去
+      this.path[x][y] = false;
+      yield this.render();
+      return false;
+    }
+
+    render() {
+      const {width, height, canvas} = this;
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          const attrs = {
+            x: j * width,
+            y: i * height,
+            width,
+            height,
+            fill: this.makeColor(i, j)
+          };
+          let rectangle = this.rectangles[i][j];
+          if (!rectangle) {
+            rectangle = canvas.addShape('rect', {
+              attrs
+            });
+            this.rectangles[i][j] = rectangle;
+          } else {
+            rectangle.attr(attrs);
+          }
+        }
+      }
+      canvas.draw();
+    }
+  }
+
+  (async () => {
+    const maze = new Maze(31, 31);
+    maze.render();
+
+    await $utils.sleep(0.5);
+
+    alert('开始生成迷宫');
+
+    for (const s of maze.run4()) {
+      await $utils.sleep(0.02);
+    }
+
+    alert('迷宫生成完毕，开始使用深度优先搜索求解迷宫');
+
+    for (const s of maze.solveDFS()) {
+      await $utils.sleep(0.03);
+    }
+  })();
+</script>
+</html>
