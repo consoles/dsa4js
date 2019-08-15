@@ -2,90 +2,91 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Union Find均摊成本图像</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Union Find均摊成本图像</title>
 </head>
 
 <body>
-    <div style="width:fit-content;margin:auto;">
-        <h1 style="text-align:center">均摊成本图像</h1>
-        <div id="main1" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
-        <div id="main2" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
-        <div id="main3" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
-        <div id="main4" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
-    </div>
+<div style="width:fit-content;margin:auto;">
+  <h1 style="text-align:center">均摊成本图像</h1>
+  <div id="main1" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main2" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main3" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main4" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
 
-    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
-    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
-    <script>
-        async function render() {
-            try {
-                const { data } = await axios.get('http://127.0.0.1:3000/data');
-                for (let i = 0; i < data.length; i++) {
-                    const { desc, ret } = data[i];
-                    const option = {
-                        backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
-                            offset: 0,
-                            color: '#f7f8fa'
-                        }, {
-                            offset: 1,
-                            color: '#cdd0d5'
-                        }]),
-                        title: {
-                            text: desc
-                        },
-                        tooltip: {
-                            trigger: 'axis'
-                        },
-                        legend: {
-                            data: ['connected成本', 'union成本', '平均成本']
-                        },
-                        xAxis: {
-                            splitLine: {
-                                lineStyle: {
-                                    type: 'dashed'
-                                }
-                            }
-                        },
-                        yAxis: {
-                            splitLine: {
-                                lineStyle: {
-                                    type: 'dashed'
-                                }
-                            },
-                            scale: true
-                        },
-                        series: [
-                            {
-                                name: 'connected成本',
-                                type: 'scatter',
-                                data: ret.currentConnectedPoints
-                            },
-                            {
-                                name: 'union成本',
-                                type: 'scatter',
-                                data: ret.currentUnoinPoints
-                            },
-                            {
-                                name: '平均成本',
-                                type: 'scatter',
-                                data: ret.totalAccessPoints
-                            },
-                        ]
-                    };
-                    const el = document.getElementById(`main${i + 1}`);
-                    const chart = echarts.init(el);
-                    chart.setOption(option);
-                }
-
-            } catch (e) {
-                console.error(e);
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    try {
+      const {data} = await axios.get('./union-find.json');
+      for (let i = 0; i < data.length; i++) {
+        const {desc, ret} = data[i];
+        const option = {
+          backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
+            offset: 0,
+            color: '#f7f8fa'
+          }, {
+            offset: 1,
+            color: '#cdd0d5'
+          }]),
+          title: {
+            text: desc
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['connected成本', 'union成本', '平均成本']
+          },
+          xAxis: {
+            splitLine: {
+              lineStyle: {
+                type: 'dashed'
+              }
             }
-        }
-        render();
-    </script>
+          },
+          yAxis: {
+            splitLine: {
+              lineStyle: {
+                type: 'dashed'
+              }
+            },
+            scale: true
+          },
+          series: [
+            {
+              name: 'connected成本',
+              type: 'scatter',
+              data: ret.currentConnectedPoints
+            },
+            {
+              name: 'union成本',
+              type: 'scatter',
+              data: ret.currentUnionPoints
+            },
+            {
+              name: '平均成本',
+              type: 'scatter',
+              data: ret.totalAccessPoints
+            },
+          ]
+        };
+        const el = document.getElementById(`main${i + 1}`);
+        const chart = echarts.init(el);
+        chart.setOption(option);
+      }
+
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  render();
+</script>
 </body>
 
 </html>

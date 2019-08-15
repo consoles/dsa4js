@@ -305,9 +305,23 @@ class Queue {
 }
 ```
 
-### 参考资料
+## 优先队列
+
+参见[优先队列](priority_queue.md)
+
+## 符号表
+
+参见[符号表](symbol_table.md)
+
+## 二分搜索树
+
+参见[二分搜索树](bst.md)
+
+## 参考资料
 
 - [《算法》](https://github.com/aistrate/AlgorithmsSedgewick)
+- [练习题java实现](https://github.com/YangXiaoHei/Algorithms)
+- [练习题C#实现](https://github.com/ikesnowy/Algorithms-4th-Edition-in-Csharp)
 - [算法4的数据文件](http://git-hexo-blog.oss-cn-beijing.aliyuncs.com/algs4-data.zip)
 
 ## 难点
@@ -325,6 +339,12 @@ class Queue {
 - 2.5.19
 - 2.5.20
 - 2.5.32
+- 3.2.5
+- 3.2.16
+- 3.2.20
+- 3.2.24
+- 3.2.35
+- 3.2.41
 
 ## webstorm快捷键
 

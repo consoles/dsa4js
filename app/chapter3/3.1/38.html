@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,height=device-height">
+  <title>put操作均摊成本图</title>
+  <style>::-webkit-scrollbar {
+    display: none;
+  }
+
+  html, body {
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+  }</style>
+</head>
+<body>
+<div id="main"></div>
+<script src="../../../node_modules/@antv/g2/dist/g2.min.js"></script>
+<script>
+  // 在arr中均匀选取n个元素，第一个元素必选
+  function avgPick(arr, n) {
+    const gap = parseInt(arr.length / n);
+    let i = 0;
+    const pathSums = [];
+    for (let i = 0; i < arr.length; i += gap) {
+      pathSums.push(arr[i]);
+      pathSums.push(arr[i + 1]);
+    }
+    return pathSums;
+  }
+
+  const pointCount = 1000;
+
+  (async () => {
+    const {scatterDataSet, lineDataSet} = await (await fetch('./38.g2.data.json')).json();
+    const chart = new G2.Chart({
+      container: 'main',
+      forceFit: true,
+      height: window.innerHeight
+    });
+    const points = avgPick(scatterDataSet, pointCount);
+    const lineData = avgPick(lineDataSet, pointCount);
+    const data = [];
+    for (let i = 0; i < points.length; i++) {
+      data.push(Object.assign(points[i], {avg: lineData[i].y}));
+    }
+    chart.source(data);
+
+    chart.point().position('x*y').color('type').size(4).opacity(0.65).shape('circle');
+    chart.line().position('x*avg').size(2).shape('smooth').color('type', ['#45BFC0', '#FFCC55']);
+    chart.render();
+
+  })();
+
+</script>
+</body>
+</html>

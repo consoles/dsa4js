@@ -2,3 +2,7 @@ node_modules/
 test/input/
 test/output/
 .idea/
+app/chapter3/3.2/44.g2.data.json
+app/chapter3/3.2/45.g2.data.json
+app/chapter3/3.2/47.echarts.option.json
+app/chapter1/1.5/union-find.json
