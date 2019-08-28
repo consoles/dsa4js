@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>根节点到达任意节点的平均路径长度</title>
+</head>
+<body>
+<div style="width:fit-content;margin:auto;">
+  <div id="main" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+<script>
+  async function render() {
+    const {data} = await axios.post('./47.echarts.option.json');
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption(data);
+  }
+  render();
+</script>
+</body>
+</html>

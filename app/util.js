@@ -4,6 +4,8 @@
  * 算法练习，参考：https://github.com/jimmysuncpt/Algorithms.git
  */
 
+const randomstring = require('randomstring');
+
 const ListNode = require('./Node');
 
 module.exports = {
@@ -208,6 +210,21 @@ module.exports = {
       callback(data)
     })
   },
+  async readLinesAsync(filename) {
+    const rl = require('readline').createInterface({
+      input: require('fs').createReadStream(filename)
+    });
+    return new Promise(resolve => {
+      const lines = [];
+      rl.on('line', line => {
+        line = line.trim();
+        if (line.length > 0) {
+          lines.push(line);
+        }
+      });
+      rl.on('close', () => resolve(lines));
+    });
+  },
   binarySearch: require('./binarySearch').binarySearch,
   unique: function (arr) {
     var ret = [arr[0]];
@@ -376,6 +393,14 @@ module.exports = {
     const ret = [];
     for (let i = 0; i < len; i++) {
       ret.push(Math.random() > .5 ? v1 : v2);
+    }
+    return ret;
+  },
+  genRandomStringArr(len, strMinLen, strMaxLen) {
+    const ret = [];
+    for (let i = 0; i < len; i++) {
+      const strLen = module.exports.randomInt(strMinLen, strMaxLen);
+      ret.push(randomstring.generate(strLen));
     }
     return ret;
   },

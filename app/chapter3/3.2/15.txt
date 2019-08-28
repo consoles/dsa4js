@@ -1,0 +1,6 @@
+a: E Q
+b: E Q
+c: E Q
+d: E Q J
+e: E Q T E D
+f: E D E Q T
