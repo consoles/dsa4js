@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+  <title>扫雷游戏</title>
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html, body {
+      overflow: hidden;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div style="width:fit-content;margin:10px auto;">
+  <div id="main"></div>
+</div>
+<script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+<script>
+  class MineSweeper {
+    constructor(rowCount, colCount, mineCount) {
+      if (mineCount > rowCount * colCount) {
+        throw new Error('雷太多了^-^');
+      }
+      this.data = new Array(rowCount); // rowCount * colCount的矩阵中如果有雷，则对应坐标为true
+      this.images = new Array(rowCount); // 每个坐标的贴图缓存
+      this.open = new Array(rowCount); // 每个格子是否打开
+      this.flags = new Array(rowCount); // 每个坐标是否被标记为了小旗子
+      this.numbers = new Array(rowCount); // 如果不是雷的话，周围的8个格子有多少个雷
+
+      for (let i = 0; i < rowCount; i++) {
+        this.data[i] = new Array(colCount).fill(false);
+        this.images[i] = new Array(colCount);
+        this.open[i] = new Array(colCount).fill(false);
+        this.flags[i] = new Array(colCount).fill(false);
+        this.numbers[i] = new Array(colCount).fill(0);
+      }
+
+      this.rowCount = rowCount;
+      this.colCount = colCount;
+      this.mineCount = mineCount;
+
+      this.initMines();
+      this.calculateNumbers();
+
+      const BLOCK_SIZE = this.BLOCK_SIZE = 32; // 每个块（图片资源）的大小是32*32px
+
+      const sceneWidth = this.sceneWidth = BLOCK_SIZE * colCount;
+      const sceneHeight = this.sceneHeight = BLOCK_SIZE * rowCount;
+
+      this.canvas = new G.Canvas({
+        containerId: 'main',
+        width: sceneWidth,
+        height: sceneHeight
+      });
+    }
+
+    inArea(x, y) {
+      return x >= 0 && x < this.colCount && y >= 0 && y < this.rowCount;
+    }
+
+    calculateNumbers() {
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          // 遍历以(i,j)为中心的3*3矩阵的9个格子
+          for (let x = i - 1; x <= i + 1; x++)
+            for (let y = j - 1; y <= j + 1; y++)
+              if (this.inArea(x, y) && this.data[x][y])
+                this.numbers[i][j]++;
+        }
+      }
+    }
+
+    initMines() {
+
+      // 如果盘面比较大，而且生成的雷比较多的话，死循环会大量消耗CPU
+
+      // for (let i = 0; i < this.mineCount; i++) {
+      //   while (true) {
+      //     const x = parseInt(Math.random() * this.rowCount);
+      //     const y = parseInt(Math.random() * this.colCount);
+      //     if (!this.isMine(x, y)) {
+      //       this.data[x][y] = true;
+      //       break;
+      //     }
+      //   }
+      // }
+
+      // 生成一个有序的，然后打乱结果
+      for (let i = 0; i < this.mineCount; i++) {
+        // 将一维映射到二维的一个小技巧
+        const x = parseInt(i / this.colCount);
+        const y = i % this.colCount;
+        this.data[x][y] = true;
+      }
+
+      // let swapTime = this.rowCount * this.colCount;
+      // swapTime = this.mineCount;
+      // for (let i = 0; i < swapTime; i++) {
+      //   // const x1 = parseInt(Math.random() * this.rowCount);
+      //   // const y1 = parseInt(Math.random() * this.colCount);
+      //
+      //   const x1 = parseInt(i / this.colCount);
+      //   const y1 = i % this.colCount;
+      //
+      //   const x2 = parseInt(Math.random()  * this.rowCount);
+      //   const y2 = parseInt(Math.random() * this.colCount);
+      //
+      //   [this.data[x1][y1],this.data[x2][y2]] = [this.data[x2][y2],this.data[x1][y1]];
+      // }
+
+      // Fisher-Yates洗牌算法
+      for (let i = this.rowCount * this.colCount - 1; i >= 0; i--) {
+        const iX = parseInt(i / this.colCount);
+        const iY = i % this.colCount;
+
+        const rand = parseInt(Math.random() * (i + 1));
+
+        const randX = parseInt(rand / this.colCount);
+        const randY = rand % this.colCount;
+
+        [this.data[iX][iY], this.data[randX][randY]] = [this.data[randX][randY], this.data[iX][iY]];
+      }
+    }
+
+    // 打开一片区域，floodfill算法（从某一点向周围扩张直到遇到边界）
+    // photoshop中的魔棒工具，宝石消除游戏
+    openArea(x, y) {
+      this.open[x][y] = true;
+      // 边界为有数字的地方
+      if (this.numbers[x][y] > 0) {
+        return;
+      }
+      for (let i = x - 1; i <= x + 1; i++) {
+        for (let j = y - 1; j <= y + 1; j++) {
+          if (this.inArea(i, j) && !this.open[i][j] && !this.data[i][j]) {
+            this.openArea(i, j);
+          }
+        }
+      }
+    }
+
+    render() {
+      const {canvas, BLOCK_SIZE, rowCount, colCount} = this;
+      for (let i = 0; i < rowCount; i++) {
+        for (let j = 0; j < colCount; j++) {
+
+          let type = null;
+
+          if (this.open[i][j]) {
+            if (this.data[i][j]) {
+              type = 'mine';
+            } else {
+              type = `${this.numbers[i][j]}`;
+            }
+          } else {
+            if (this.flags[i][j]) {
+              type = 'flag';
+            } else {
+              type = 'block';
+            }
+          }
+          const attrs = {
+            x: j * BLOCK_SIZE,
+            y: i * BLOCK_SIZE,
+            img: `images/${type}.png`
+          };
+
+          let image = this.images[i][j];
+          if (!image) {
+            image = this.images[i][j] = canvas.addShape('image', {attrs});
+            image.on('mousedown', a => {
+              const {event} = a;
+              // 左键
+              if (event.button === 0) {
+                if (this.data[i][j]) {
+                  // 真正的扫雷逻辑，点到雷了 game over
+                  this.open[i][j] = true;
+                } else {
+                  this.openArea(i, j);
+                }
+              } else if (event.button === 2) {
+                // 右键
+                this.flags[i][j] = !this.flags[i][j];
+              }
+              this.render();
+            });
+          } else {
+            image.attr(attrs);
+          }
+        }
+      }
+      canvas.draw();
+    }
+  }
+
+  const mineSweeper = new MineSweeper(20, 20, 50);
+  mineSweeper.render();
+</script>
+</body>
+</html>
