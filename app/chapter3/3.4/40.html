@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>散列表可视化</title>
+</head>
+<body>
+<div style="width:fit-content;margin:auto;">
+  <div id="main1" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main2" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main3" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main4" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main5" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+  <div id="main6" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+</div>
+<script src="../../../node_modules/echarts/dist/echarts.js"></script>
+<script src="../../../node_modules/axios/dist/axios.js"></script>
+<script>
+    async function render() {
+        let {data} = await axios.post('./40.echarts.hash-distribute.option.json');
+        let chart = echarts.init(document.getElementById('main1'));
+        chart.setOption(data);
+
+        data = (await axios.post('./40.echarts.list_len-distribute.option.json')).data;
+        chart = echarts.init(document.getElementById('main2'));
+        chart.setOption(data);
+
+        data = (await axios.post('./40.echarts.key_cluster-distribute.option.json')).data;
+        chart = echarts.init(document.getElementById('main3'));
+        chart.setOption(data);
+
+        data = (await axios.post('./40.echarts.fix-size-separate-chain-hash.option.json')).data;
+        chart = echarts.init(document.getElementById('main4'));
+        chart.setOption(data);
+
+        data = (await axios.post('./40.echarts.resize-separate-chain-hash.option.json')).data;
+        chart = echarts.init(document.getElementById('main5'));
+        chart.setOption(data);
+
+        data = (await axios.post('./40.echarts.linear-probing-hash.option.json')).data;
+        chart = echarts.init(document.getElementById('main6'));
+        chart.setOption(data);
+    }
+    render();
+</script>
+</body>
+</html>

@@ -6,3 +6,9 @@ app/chapter3/3.2/44.g2.data.json
 app/chapter3/3.2/45.g2.data.json
 app/chapter3/3.2/47.echarts.option.json
 app/chapter1/1.5/union-find.json
+app/chapter3/3.4/40.echarts.fix-size-separate-chain-hash.option.json
+app/chapter3/3.4/40.echarts.hash-distribute.option.json
+app/chapter3/3.4/40.echarts.key_cluster-distribute.option.json
+app/chapter3/3.4/40.echarts.linear-probing-hash.option.json
+app/chapter3/3.4/40.echarts.list_len-distribute.option.json
+app/chapter3/3.4/40.echarts.resize-separate-chain-hash.option.json

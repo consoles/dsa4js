@@ -355,6 +355,10 @@ class Queue {
 - 3.4.20
 - 3.4.21
 - 3.4.23
+- 3.4.27
+- 3.4.28
+- 3.4.29
+- 3.4.32
 
 ## webstorm快捷键
 
@@ -362,6 +366,25 @@ class Queue {
 - 在当前目录新建文件：control + option + N
 - 选取光标左右:cmd + shift + 左/右
 - 打开最近文件：cmd + E
+- 前进、后退:`cmd+[,cmd+]`
 - 替换:cmd + R
 - 搜索：shift + cmd + F
 - 打开剪切板：ctrl + shift + v:ctrl+c多次的内容可以存在剪切板中，然后批量粘贴 
+- 查看类中的方法：cmd+F12，直接输入方法名可以过滤
+- 向前删除：Fn+delete
+- PageUp/PageDown:Fn+上/下
+- 显示方法参数：cmd+P
+- 显示文档信息：F1
+- 重写父类方法:control+o
+- 包围代码:cmd+option+T(if,else,try,for,括号)
+- 优化导入:control+option+O
+- 从缓冲区中粘贴：cmd+shift+V
+- 将代码合并成一行：control+shift+J
+- 大小写转换：cmd+shift+U
+- 查找方法调用处：option+F7
+- 跳转到方法实现处:cmd+option+B
+- 显示类的层次：control+H
+- 显示方法层次：cmd+shift+H
+- 跳到下一个/上一个警告的位置:F2/shift+F2
+- 打开/关闭对应的侧边窗口:cmd+1/2/3/4/5
+ 

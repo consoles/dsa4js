@@ -4,6 +4,7 @@
  * 算法练习，参考：https://github.com/jimmysuncpt/Algorithms.git
  */
 
+const _ = require('lodash');
 const randomstring = require('randomstring');
 
 const ListNode = require('./Node');
@@ -110,18 +111,18 @@ module.exports = {
     for (let i = 0; i < len; i++) {
       // 将arr[i]和与之后的元素随机交换
       var index = i + module.exports.sample(0, len - i - 1);
-      require('./swap')(arr, i, index)
+      require('./swap')(arr, i, index);
     }
-    return arr
+    return arr;
   },
   // 糟糕的洗牌算法，每个元素与数组中的任意一个值交换,上一个算法效率的1/6
   worstShuffle: function (arr) {
     var len = arr.length;
     for (let i = 0; i < len; i++) {
       var index = module.exports.sample(0, len - 1);
-      require('./swap')(arr, i, index)
+      require('./swap')(arr, i, index);
     }
-    return arr
+    return arr;
   },
   /**
    * https://zh.wikipedia.org/wiki/%E8%BC%BE%E8%BD%89%E7%9B%B8%E9%99%A4%E6%B3%95
@@ -193,7 +194,7 @@ module.exports = {
       matrix[i] = Array.from({length: k + 1}, _ => -1);
     }
 
-    return bin(n, k, p)
+    return bin(n, k, p);
   },
   readLines: function (inputStream, callback) {
     var opts = {
@@ -207,8 +208,8 @@ module.exports = {
         data.push(line);
       }
     }).on('close', function () {
-      callback(data)
-    })
+      callback(data);
+    });
   },
   async readLinesAsync(filename) {
     const rl = require('readline').createInterface({
@@ -257,29 +258,29 @@ module.exports = {
   },
   isPrime: function (num) {
     for (let i = 0; i < num / 2 | 0; i++) {
-      if (num % i === 0) return false
+      if (num % i === 0) return false;
     }
-    return true
+    return true;
   },
   /**
    * 判断两个字符串是否是回环变位，字符串str1中的字符循环移动后可以得到str2
    * 例如：ACTGACC和TGACGAC
    */
   isCircularRotation: function (str1, str2) {
-    return str1.length === str2.length && str1.repeat(2).indexOf(str2) != -1
+    return str1.length === str2.length && str1.repeat(2).indexOf(str2) != -1;
   },
   toBinaryString: function (num) {
-    var stack = []
+    var stack = [];
     while (num) {
-      stack.push(num % 2)
-      num = num / 2 | 0
+      stack.push(num % 2);
+      num = num / 2 | 0;
     }
-    var str = ''
+    var str = '';
     // while(stack.length) {
     //     str += stack.pop()
     // }
-    str = stack.reduceRight((prev, current) => '' + prev + current)
-    return str
+    str = stack.reduceRight((prev, current) => '' + prev + current);
+    return str;
   },
   print(str) {
     process.stdout.write(str + '');
@@ -409,5 +410,13 @@ module.exports = {
   },
   randomDate(startDate, endDate) {
     return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+  },
+  randomPick(arr, count, picked = new Set()) {
+    if (picked.size >= count) {
+      return [...picked];
+    }
+    const item = _.sample(arr);
+    picked.add(item);
+    return module.exports.randomPick(arr, count, picked);
   }
 };
