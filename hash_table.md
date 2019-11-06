@@ -360,3 +360,53 @@ module.exports = class LinearProbingHashST {
 };
 ```
 
+##  使用散列表存储稀疏向量
+
+对于N*N的矩阵和大小为N的向量进行相乘，时间复杂度和N^2成正比。代码实现如下:
+
+```java
+// ...
+int[][] matrix = new int[N][N];  // 矩阵
+int[] x = new int[x]; // 向量
+int[] ret = new int[x]; // 矩阵和向量乘法的结果为一个N*1的矩阵
+
+// ...
+// 初始化向量和矩阵
+for(int i = 0;i < N;i++) {
+  sum = 0;
+  for(int j = 0;j < N;j++) {
+    sum += matrix[i][j] * x[j]
+  }
+  ret[i] = sum;
+}
+```
+
+在实际应用中，N往往非常巨大。幸好，我们使用的矩阵多数是稀疏的（大多数都是0），用HashMap就可以表示系数矩阵：
+
+```java
+public class SparseVector {
+  private HashMap <Integer,Integer> st = new HashMap()<>;
+  public void put(int index,int value){
+    st.put(index,value);
+  }
+  public int get(index){
+    if(!st.contains(index)){
+      return 0;
+    }
+    return st.get(index);
+  }
+  public int dot(int[] that){
+    int sum  = 0;
+    for(int key : st.keySet()) {
+      sum += that[i] * this.get(i);
+    }
+    return sum;
+  }
+}
+```
+
+以上符号表的用例实现了稀疏向量的主要功能并高效完成了点乘操作。将一个 向量中的每一项和两一个向量中的对应项相乘并将结果相加，所需要的乘法操作数量等于稀疏稀向量中农的非零项的数目。
+
+![稀疏矩阵的表示.png](http://git-hexo-blog.oss-cn-beijing.aliyuncs.com/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E7%9A%84%E8%A1%A8%E7%A4%BA.png)
+
+这里不再使用`a[i][j]`来访问矩阵中的第i行和第j列的元素，而是使用`a[i].put(j,val)`来表示矩阵中的值并使用`a[i].get(j)`来获取它。用这种方式实现的矩阵和向量大的乘法比数组表示法的实现更简单（也更能清晰描述乘法的过程）。更重要的是，它所需要的时间仅和N加上矩阵中的非零元素的数量成正比。

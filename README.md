@@ -327,6 +327,7 @@ class Queue {
 - [练习题java实现](https://github.com/YangXiaoHei/Algorithms)
 - [练习题C#实现](https://github.com/ikesnowy/Algorithms-4th-Edition-in-Csharp)
 - [算法4的数据文件](http://git-hexo-blog.oss-cn-beijing.aliyuncs.com/algs4-data.zip)
+- [Fighter's Blog](https://fighterhit.github.io/)
 
 ## 难点
 
@@ -359,6 +360,9 @@ class Queue {
 - 3.4.28
 - 3.4.29
 - 3.4.32
+- 3.5.15
+- 3.5.22
+- 3.5.27
 
 ## webstorm快捷键
 
