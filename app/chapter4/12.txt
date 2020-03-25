@@ -1,0 +1,3 @@
+不能。
+如图所示，根节点到v的距离为1，根节点到w的距离也是1，但是v到w的距离为1而不是2
+![ex_4.1.12.png](http://git-hexo-blog.oss-cn-beijing.aliyuncs.com/ex_4.1.12.png)

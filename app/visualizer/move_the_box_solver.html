@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+  <title>move the box自动求解</title>
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html, body {
+
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<p>其实就是三消游戏，横向或者纵向3个颜色一样的盒子就可以消除</p>
+<p>悬空的盒子会落下，如果3个颜色相同继续进行消除</p>
+<p>游戏的终止条件是所有盒子全部被消除</p>
+<div style="width:fit-content;margin:10px auto;">
+  <div id="main"></div>
+</div>
+<script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+<script src="../../node_modules/lodash/lodash.js"></script>
+<script>
+  function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve,ms));
+  }
+
+	class BoardData {
+		constructor(maxTurn, dataStr) {
+			this.maxTurn = maxTurn;
+			this.data = dataStr.split('\n')
+				.map(x => x.trim())
+				.filter(x => x.length > 0)
+				.map(x => x.split(''));
+		}
+	}
+
+	const boxDataLevel09 = new BoardData(1, `.....
+..A..
+..B..
+..A..
+..B..
+.BAB.
+.BAB.
+.ABA.`);
+
+	const boxDataLevel16 = new BoardData(2, `.........
+....A....
+...BCB...
+...ADA...
+..BDECB..
+..DFAFC..
+.BAAEFEB.`);
+
+	let count = 0;
+
+	class Board {
+		constructor(boxData) {
+			Object.assign(this, boxData);
+			this.rowCount = this.data.length;
+			this.colCount = this.data[0].length;
+
+			this.blockSide = 80;
+			this.sceneWidth = this.colCount * this.blockSide;
+			this.sceneHeight = this.rowCount * this.blockSide;
+
+			this.CHAR_EMPTY = '.';
+
+			this.colorList =
+				['#F44336',
+					'#E91E63',
+					'#9C27B0',
+					'#673AB7',
+					'#3F51B5',
+					'#2196F3',
+					'#03A9F4',
+					'#00BCD4',
+					'#009688',
+					'#4CAF50',
+					'#8BC34A',
+					'#CDDC39',
+					'#FFEB3B',
+					'#FFC107',
+					'#FF9800',
+					'#FF5722',
+					'#795548',
+					'#9E9E9E',
+					'#607D8B',
+					'#000000',
+					'#FFFFFF'];
+			this.colorMap = new Map(); // 字符 => 颜色
+			this.rects = new Array(this.rowCount);
+			for (let i = 0; i < this.rowCount; i++) {
+				this.rects[i] = new Array(this.colCount);
+			}
+
+			this.canvas = new G.Canvas({
+				containerId: 'main',
+				width: this.sceneWidth,
+				height: this.sceneHeight
+			});
+
+			this.d = [
+				[-1, 0],
+				[0, 1],
+				[0, -1]
+			];
+		}
+
+		clone(board) {
+			// 注意Object.assign是浅拷贝
+			return new Board(_.cloneDeep(board));
+		}
+
+		toString() {
+			return this.data.map(cols => cols.join(' ')).join('\n');
+		}
+
+		swap(x1, y1, x2, y2) {
+			if (!this.inArea(x1, y1) || !this.inArea(x2, y2)) {
+				return;
+			}
+			[this.data[x1][y1], this.data[x2][y2]] = [this.data[x2][y2], this.data[x1][y1]];
+		}
+
+		isWin() {
+			for (let i = 0; i < this.rowCount; i++) {
+				for (let j = 0; j < this.colCount; j++) {
+					if (this.data[i][j] !== this.CHAR_EMPTY) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		inArea(x, y) {
+			return x >= 0 && x < this.rowCount && y >= 0 && y < this.colCount;
+		}
+
+		drop() {
+			for (let j = 0; j < this.colCount; j++) {
+				let cur = this.rowCount - 1;
+				for (let i = this.rowCount - 1; i >= 0; i--) {
+					if (this.data[i][j] !== this.CHAR_EMPTY) {
+						this.data[cur][j] = this.data[i][j];
+						cur--;
+					}
+				}
+				for (; cur >= 0; cur--) {
+					this.data[cur][j] = this.CHAR_EMPTY;
+				}
+			}
+		}
+
+		/**
+		 * 消除逻辑
+		 */
+		match() {
+
+			let isMatched = false;
+
+			const tag = new Array(this.rowCount);
+			for (let i = 0; i < tag.length; i++) {
+				tag[i] = new Array(this.colCount).fill(false);
+			}
+			for (let x = 0; x < this.rowCount; x++) {
+				for (let y = 0; y < this.colCount; y++) {
+					const char = this.data[x][y];
+					if (char !== this.CHAR_EMPTY) {
+						for (const [xOffset, yOffset] of [[0, 1], [1, 0]]) {
+							// 从(x,y)出发连续走2步到达的位置
+							const newX1 = x + xOffset;
+							const newY1 = y + yOffset;
+							const newX2 = newX1 + xOffset;
+							const newY2 = newY1 + yOffset;
+							if (this.inArea(newX1, newY1) && this.inArea(newX2, newY2)
+								&& this.data[newX1][newY1] === char && this.data[newX2][newY2] === char) {
+
+								tag[x][y] = true;
+								tag[newX1][newY1] = true;
+								tag[newX2][newY2] = true;
+
+								isMatched = true;
+							}
+						}
+					}
+				}
+			}
+			for (let x = 0; x < this.rowCount; x++) {
+				for (let y = 0; y < this.colCount; y++) {
+					if (tag[x][y]) {
+						this.data[x][y] = this.CHAR_EMPTY;
+					}
+				}
+			}
+			return isMatched;
+		}
+
+		async run() {
+			// match && drop
+			do {
+				this.drop();
+			} while (this.match());
+		}
+
+		// 通过盘面board，使用turn次move，解决move the box 问题
+		async _solve(board, turn) {
+
+			count++;
+			console.log(count, 'in');
+			console.log(board.toString());
+
+			if (!board || turn < 0) {
+				throw new Error('solve params error');
+			}
+			if (turn === 0) {
+				return board.isWin();
+			}
+			if (board.isWin()) {
+				return true;
+			}
+			for (let i = 0; i < this.rowCount; i++) {
+				for (let j = 0; j < this.colCount; j++) {
+					if (board.data[i][j] !== this.CHAR_EMPTY) {
+						// 尝试向左、向下、向右移动箱子
+						for (const [xOffset, yOffset] of this.d) {
+							const newX = i + xOffset;
+							const newY = j + yOffset;
+							if (this.inArea(newX, newY)) {
+								const nextBoard = this.clone(board);
+
+								console.log(count, `swap (${i},${j}) -> (${newX},${newY})`);
+								console.log(count, 'before');
+								console.log(nextBoard.toString());
+								nextBoard.swap(i, j, newX, newY);
+
+								console.log(count, 'swap');
+								console.log(nextBoard.toString());
+								nextBoard.run();
+
+								console.log(count, 'end');
+								console.log(nextBoard.toString());
+								const success = this._solve(nextBoard, turn - 1);
+								if (success) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		solve() {
+			if (this.maxTurn < 0) {
+				return false;
+			}
+			return this._solve(this, this.maxTurn);
+		}
+
+		render() {
+			for (let i = 0; i < this.rowCount; i++) {
+				for (let j = 0; j < this.colCount; j++) {
+					const char = this.data[i][j];
+					if (char !== this.CHAR_EMPTY) {
+						let color = this.colorMap.get(char);
+						if (!color) {
+							color = this.colorList[this.colorMap.size];
+							this.colorMap.set(char, color);
+						}
+						let rect = this.rects[i][j];
+						const attrs = {
+							x: j * this.blockSide + 2,
+							y: i * this.blockSide + 2,
+							width: this.blockSide - 4,
+							height: this.blockSide - 4,
+							fill: color
+						};
+						if (rect) {
+							rect.attr(attrs);
+						} else {
+							rect = this.canvas.addShape('rect', {
+								attrs
+							});
+							this.rects[i][j] = rect;
+						}
+					}
+				}
+			}
+			this.canvas.draw();
+		}
+	}
+
+	const board = new Board(boxDataLevel09);
+	board.render();
+
+	const isSuccess = board.solve();
+
+	alert(isSuccess ? 'has a solution' : 'no solution');
+
+</script>
+</body>
+</html>
