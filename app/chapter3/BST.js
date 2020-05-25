@@ -392,6 +392,23 @@ class BST {
     }
   }
 
+  // 层序遍历求二叉树的最大深度,参见递归方法this._maxLevel，这两种方法可以解决leetcode104
+  levelOrder2() {
+    // 加上层次的概念
+    let level = 0;
+    const q = [this.root];
+    while (q.length) {
+      let count = q.length; // 这一层的节点的个数，需要从队列中处理完这一层的所有节点后，才能进行下一层的遍历
+      while (count--) {
+        const node = q.shift();
+        if (node.left) q.push(node.left);
+        if (node.right) q.push(node.right);
+      }
+      level++;
+    }
+    console.log('树的最大深度', level);
+  }
+
   _toString(node, depth, strArr) {
     if (!node) {
       strArr.push('--'.repeat(depth) + 'null\n');
@@ -593,7 +610,7 @@ class BST {
   }
 
   // 任意一个节点距离根节点的路径长度
-  pathSumToRoot(node){
+  pathSumToRoot(node) {
     let cur = this.root;
     let key = node.key;
     let sum = 0;
@@ -612,7 +629,7 @@ class BST {
     return 0; // 没找到
   }
 
-  get pathSum(){
+  get pathSum() {
     // 广度优先，针对每个节点，计算pathSum
     const queue = [this.root];
     let sum = 0;

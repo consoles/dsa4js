@@ -218,6 +218,35 @@ const ret = sort(arr);
 console.log(ret);
 ```
 
+### 计数排序
+
+这是一种非基于比较的算法。它的优势在于对一定范围内的整数进行排序的时候，复杂度为O(n+k)，k为整数的范围，快于任何基于比较的排序算法。这是一种用空间换时间的算法
+
+leetcodeNo912问题：给你一个整数数组 nums，请你将该数组升序排列。`1 <= nums.length <= 50000`，`-50000 <= nums[i] <= 50000`。由于这个问题的数据范围比较小，使用非比较排序的计数排序可能会快一点。
+
+```js
+function sort(nums) {
+    // 计数排序
+    const max = Math.max.apply(null, nums);
+    const min = Math.min.apply(null, nums);
+  
+    const counter = new Array(max - min + 1).fill(0);
+    for (const num of nums) {
+      counter[num - min]++;
+    }
+  
+    let idx = 0;
+    for (let i = min; i <= max; i++) {
+      let cnt = counter[i - min];
+      while (cnt--) {
+        nums[idx++] = i;
+      }
+    }
+  
+    return nums;
+}
+```
+
 ## 背包
 
 一种不支持从中删除元素的集合数据类型——它的目的就是帮助用例收集元素并迭代遍历所有收集到的元素（用例也可以检查背包是否为空或者背包中元素的数量）。迭代的顺序不确定且和用例无关。
@@ -279,7 +308,19 @@ class Queue {
 
 ### 括号匹配问题
 
-匹配括号是否成对出现。`[()]{}{[()()]()}`为true，而`[(])`为false。与双栈法求值算法类似：遇到左括号(`(`,`[`或者`{`)的时候入栈，遇到右括号的时候出栈判断匹配问题。
+匹配括号是否成对出现。`[()]{}{[()()]()}`为true，而`[(])`为false。与双栈法求值算法类似：遇到左括号(`(`,`[`或者`{`)的时候入栈，遇到右括号的时候出栈判断匹配问题。此问题可以进一步简化，不使用显式的栈而使用变量代替：
+
+```java
+public boolean valid(char[] current) {
+    int balance = 0;
+    for (char c: current) {
+        if (c == '(') balance++;
+        else balance--;
+        if (balance < 0) return false;
+    }
+    return balance == 0;
+}
+```
 
 ### 括号补全问题
 
