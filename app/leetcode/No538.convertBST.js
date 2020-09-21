@@ -32,6 +32,30 @@ var convertBST = function (root) {
   return dfs(root)
 };
 
+/** 2次遍历
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var convertBST = function (root) {
+  // 先中序遍历得到节点顺序数组，然后依次修改节点中的value
+  const nodes = []
+
+  function inOrder(root) {
+    if (!root) return
+    inOrder(root.left)
+    nodes.push(root)
+    inOrder(root.right)
+  }
+
+  inOrder(root)
+
+  // 从后向前修改节点的值(开始位置是倒数第2个位置)
+  for (let i = nodes.length - 2; i >= 0; i--) {
+    nodes[i].val += nodes[i + 1].val
+  }
+  return root
+};
+
 const root = {
   val: 5,
   left: {
