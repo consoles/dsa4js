@@ -3,6 +3,9 @@
  * @return {void} Do not return anything, modify nums in-place instead.
  */
 var sortColors = function (nums) {
+
+    if (nums.length <= 1) return
+
     // 思路1，计数排序
     // const counter = new Array(3).fill(0)
     // for (const num of nums) {
@@ -38,24 +41,45 @@ var sortColors = function (nums) {
     // }
 
     // 思路3：双指针
-    let p0 = 0, p2 = nums.length - 1, cur = 0
-    while (cur <= p2) {
-        const num = nums[cur]
+    // let p0 = 0, p2 = nums.length - 1, cur = 0
+    // while (cur <= p2) {
+    //     const num = nums[cur]
+    //     if (num === 0) {
+    //         swap(cur, p0)
+    //         cur++
+    //         p0++
+    //     } else if (num === 2) {
+    //         swap(cur, p2)
+    //         // 注意：！！！
+    //         // cur++
+    //         p2--
+    //     } else {
+    //         cur++
+    //     }
+    // }
+
+    // 思路4：用3个指针p0,p1,p2记录0,1,2下标的位置，初始值都是-1
+    // 如果nums[i] = 0,则p2向后移动1位，p1向后移动1位，将p0位置的值设置为0，并自增
+    // 如果nums[i] = 1，则会对p2有影响，p2向后移动1位
+    // 如果nums[i] = 2，则直接插入p2
+    let p0 = -1, p1 = -1, p2 = -1
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i]
         if (num === 0) {
-            swap(cur, p0)
-            cur++
-            p0++
-        } else if (num === 2) {
-            swap(cur, p2)
-            // 注意：！！！
-            // cur++
-            p2--
+            nums[++p2] = 2
+            nums[++p1] = 1
+
+            nums[++p0] = 0
+        } else if (num === 1) {
+            nums[++p2] = 2
+
+            nums[++p1] = 1
         } else {
-            cur++
+            nums[++p2] = 2
         }
     }
 };
 
-const nums = [1, 2, 0]
+const nums = [2, 0, 2, 1, 1, 0]
 sortColors(nums)
 console.log(nums);
