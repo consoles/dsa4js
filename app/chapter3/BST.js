@@ -376,6 +376,23 @@ class BST {
     this._postOrder(this.root);
   }
 
+  postOrder2(){
+    let cur = this.root;
+    const stack = [];
+    const res = [];
+    while(cur || stack.length) {
+      if (cur) {
+        stack.push(cur);
+        res.unshift(cur.key);
+        cur = cur.right;
+      } else {
+        const node = stack.pop();
+        cur = node.left;
+      }
+    }
+    return res;
+  }
+
   // 层序遍历（广度优先遍历）
   levelOrder() {
     const queue = [];
