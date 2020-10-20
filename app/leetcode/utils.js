@@ -25,7 +25,7 @@ module.exports = {
         }
         return head
     },
-    dumyLinkedList(head){
+    dumpLinkedList(head){
         const arr = []
         let cur = head
         while(cur) {

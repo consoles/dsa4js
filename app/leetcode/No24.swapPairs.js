@@ -34,8 +34,8 @@ var swapPairs = function(head) {
     return dummyHead.next
 };
 
-const {buildLinkedListFromArray,dumyLinkedList} = require('./utils')
+const {buildLinkedListFromArray,dumpLinkedList} = require('./utils')
 const head =  buildLinkedListFromArray([1,2,3,4])
 // 注意newHead是反转链表的返回值，原先的head节点是有副作用的
 const newHead = swapPairs(head)
-console.log( dumyLinkedList(newHead) );
+console.log( dumpLinkedList(newHead) );
