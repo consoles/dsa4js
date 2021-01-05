@@ -7,7 +7,7 @@ var eraseOverlapIntervals = function (intervals) {
     // 按照区间的起点进行排序
     intervals.sort((a, b) => a[0] - b[0]);
     // 记录区间尾部的位置
-    const end = intervals[0][1];
+    let end = intervals[0][1];
     // 需要移除的数量
     let count = 0;
     for (let i = 1; i < intervals.length; i++) {
