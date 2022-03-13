@@ -42,6 +42,7 @@
     "axios": "^0.19.0",
     "echarts": "^4.1.0",
     "echarts-stat": "^1.1.1",
+    "mysql2": "^2.3.3",
     "node-fetch": "^2.6.0",
     "probability-distributions": "^0.9.1",
     "robotjs": "^0.6.0",
