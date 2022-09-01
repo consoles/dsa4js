@@ -1,17 +1,18 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 contract Person {
     // 约定，属性以 _ 开头
-    uint _height; // 身高
-    uint _age; // 年龄
+    uint256 _height; // 身高
+    uint256 _age; // 年龄
     address _owner; // 合约拥有者
 
-    bytes9 public g = 0x123456789abcde;
+    bytes9 public g = 0x111111111111111111;
 
-    mapping (uint => string) students;
+    mapping(uint256 => string) students;
 
     // constructor
-    function Person() {
+    constructor() {
         _height = 180;
         _age = 29;
         _owner = msg.sender; // 合约发起方的地址
@@ -20,49 +21,54 @@ contract Person {
     }
 
     // 返回一个元组 (tuples)
-    function studentNames() constant returns (string name0, string name1) {
+    function studentNames()
+        public
+        returns (string memory name0, string memory name1)
+    {
         name0 = students[0];
         name1 = students[1];
-        return (names0, names1); // 这一句可以不要
     }
 
-    function owner() constant returns (address) {
+    function owner() public returns (address) {
         return _owner;
     }
 
-    function getBalance(address addr) constant returns (uint) {
+    function getBalance(address addr) public returns (uint256) {
         // 钱包转账有2个方法：transfer 和 send，其中send更为低层，transfer更加安全
         return addr.balance; // addr.balance 属性是地址余额
     }
 
     // 查询当前合约地址余额
-    function getCurrentAddressBalance() constant returns (uint) {
-        return this.balance;
+    function getCurrentAddressBalance() public returns (uint256) {
+        return msg.sender.balance;
     }
 
     // setter
-    function setHeight(uint height) {
+    function setHeight(uint256 height) public {
         _height = height;
     }
+
     // getter, constant 代表方法只读
-    function heiht() constant returns (uint){
+    function heiht() public returns (uint256) {
         return _height;
     }
-    function setAge(uint age) {
+
+    function setAge(uint256 age) public {
         _age = age;
     }
-    function age() constant returns (uint) {
+
+    function age() public returns (uint256) {
         return _age;
     }
 
-    function kill() {
+    function kill() public {
         if (_owner == msg.sender) {
             // 析构
             selfdestruct(_owner);
         }
     }
 
-    function gByteLength() constant returns (uint) {
+    function gByteLength() public returns (uint256) {
         return g.length;
     }
 }
