@@ -31,7 +31,7 @@ function sleep(ms) {
     // 点击企业微信(1018,853) 这个坐标是固定在任务栏的
     console.log('激活企业微信');
     robot.moveMouse(1036, 853);
-    robot.mouseClick();;
+    robot.mouseClick();
     await sleep(2000)
     console.log('查看企业微信中的未读消息');
     // 点击企业微信中的第一条消息，第一条消息是未读消息
