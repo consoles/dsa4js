@@ -143,3 +143,44 @@ BN {
   red: null
 }
 ```
+
+### BLC
+
+建立自己的标准代币。创建的代币如果想要能够通过以太币钱包进行转账和收账，必须箭筒以太坊的 *ERC20* 标准。该标准定义了支持钱包必须的合约界面。我们将安装 [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/) 来简化加密钱包的开发过程。
+
+```bash
+mkdir BLC
+cd BLC
+npm init
+truffle init
+npm install @openzeppelin/contracts -d
+```
+
+编写合约文件 contracts/BloggerCoin.sol
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract BloggerCoin is ERC20 {
+    constructor() ERC20("BloggerCoin", "BLC") {
+        _mint(msg.sender, 1000);
+    }
+}
+```
+
+打开 truffle develop，执行 compile
+
+创建合约部署文件 migrations/1_deploy_contracts.js
+
+```js
+const BloggerCoin = artifacts.require("BloggerCoin");
+
+module.exports = function (deployer) {
+  deployer.deploy(BloggerCoin);
+};
+```
+
+执行 migrate
