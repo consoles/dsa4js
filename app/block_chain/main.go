@@ -4,7 +4,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +22,8 @@ import (
 type BlockChain struct {
 	CurrentTransactions []Transaction `json:"current_transactions"`
 	Chain               []Block       `json:"chain"`
+	Nodes               []string      `json:"nodes"`
+	Addr                string        `json:"addr"`
 }
 
 type Block struct {
@@ -94,7 +100,83 @@ func (blockChain *BlockChain) LastBlock() Block {
 	return blockChain.Chain[len(blockChain.Chain)-1]
 }
 
-func hash(block map[string]interface{}) string {
+func (blockChain *BlockChain) RegisterNode(addr string) {
+	// 语言机制实在是太坑了，contains 这种基本的都不支持，这种类似的方法在其他机制中非常常见
+	if contains(blockChain.Nodes, addr) {
+		log.Println(fmt.Sprintf("node: %s already registered", addr))
+		return
+	}
+	if addr == blockChain.Addr {
+		log.Println(fmt.Sprintf("can not add block_chain addr: %s self.", addr))
+		return
+	}
+	blockChain.Nodes = append(blockChain.Nodes, addr)
+}
+
+func (blockChain *BlockChain) ValidChain(chain []Block) bool {
+	lastBlock := chain[0]
+	for i := 1; i < len(blockChain.Chain); i++ {
+		block := blockChain.Chain[i]
+		fmt.Printf("lastBlock: %#v, block: %#v\n", lastBlock, block)
+		if block.PrevBlockHash != lastBlock.Hash() {
+			return false
+		}
+		if !validProof(lastBlock.Proof, block.Proof) {
+			return false
+		}
+		lastBlock = block
+	}
+	return true
+}
+
+// 解决分叉冲突(使用网络中最长的链)
+func (blockChain *BlockChain) ResolveConflict() bool {
+	neighbors := blockChain.Nodes
+	maxLength := len(blockChain.Chain)
+	var newChain []Block
+	for _, node := range neighbors {
+		url := fmt.Sprintf("http://%s/chain", node)
+		resp, err := http.Get(url)
+		if err != nil {
+			log.Println(fmt.Sprintf("Request %s failed: %v", url, err))
+			continue
+		}
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(body))
+		var res ChainResponse
+		_ = json.Unmarshal(body, &res)
+		fmt.Printf("%#v", res)
+		length := res.Length
+		chain := res.Chain
+		if length > maxLength && blockChain.ValidChain(chain) {
+			maxLength = length
+			newChain = chain
+		}
+	}
+	if newChain != nil {
+		blockChain.Chain = newChain
+		return true
+	}
+	return false
+}
+
+func contains(stringArr []string, key string) bool {
+	for _, str := range stringArr {
+		if str == key {
+			return true
+		}
+	}
+	return false
+}
+
+type ChainResponse struct {
+	Chain               []Block       `json:"chain"`
+	PendingTransactions []Transaction `json:"pending_transactions"`
+	Length              int           `json:"length"`
+}
+
+func (block *Block) Hash() string {
 	jsonStr, err := json.Marshal(block)
 	if err != nil {
 		log.Fatal("json stringify error:", err)
@@ -155,12 +237,55 @@ func main() {
 
 	// curl http://localhost:8080/chain
 	app.Get("/chain", func(ctx iris.Context) {
-		ctx.JSON(iris.Map{
-			"chain":                blockChain.Chain,
-			"pending_transactions": blockChain.CurrentTransactions,
-			"length":               len(blockChain.Chain),
+		ctx.JSON(&ChainResponse{
+			Chain:               blockChain.Chain,
+			PendingTransactions: blockChain.CurrentTransactions,
+			Length:              len(blockChain.Chain),
 		})
 	})
 
-	app.Listen("127.0.0.1:8080")
+	// curl -d '["localhost:2001","localhost:2002"]' http://localhost:8080/nodes/register -H "content-type: application/json"
+	app.Post("/nodes/register", func(ctx iris.Context) {
+		var nodes []string
+		err := ctx.ReadJSON(&nodes)
+		if err != nil {
+			log.Println(err)
+			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.JSON(iris.Map{
+				"message": "Request params are not valid",
+			})
+			return
+		}
+		for _, node := range nodes {
+			blockChain.RegisterNode(node)
+		}
+		ctx.JSON(iris.Map{
+			"message": "New nodes has been added",
+			"nodes":   blockChain.Nodes,
+		})
+	})
+
+	app.Get("/nodes/resolve", func(ctx iris.Context) {
+		replaced := blockChain.ResolveConflict()
+		var resp iris.Map
+		if replaced {
+			resp = iris.Map{
+				"message":   "Our chain has been replaced",
+				"new_chain": blockChain.Chain,
+			}
+		} else {
+			resp = iris.Map{
+				"message":   "Our chain is authoritative",
+				"new_chain": blockChain.Chain,
+			}
+		}
+		ctx.JSON(resp)
+	})
+
+	// go run main.go -p 2000
+	var port = flag.Int("p", 2000, "节点启动端口")
+	flag.Parse()
+	addr := fmt.Sprintf("localhost:%d", *port)
+	blockChain.Addr = addr
+	app.Listen(addr)
 }
