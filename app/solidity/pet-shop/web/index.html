@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Pete's Pet Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/css/bootstrap.min.css"
+    integrity="sha512-CpIKUSyh9QX2+zSdfGP+eWLx23C8Dj9/XmHjZY2uDtfkdLGo0uY12jgcnkX9vXOgYajEKb/jiw67EYm+kBf+6g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="text-center">Pete's Pet Shop</h1>
+    <div id="petsRow" class="row">
+    </div>
+
+  </div>
+
+  <div id="petTemplate" style="display: none">
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="panel panel-default panel-pet">
+        <div class="panel-heading">
+          <h3 class="panel-title">Scrappy</h3>
+        </div>
+        <div class="panel-body">
+          <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src=""
+            data-holder-rendered="true">
+          <br /><br />
+          <strong>Breed</strong>: <span class="pet-breed">Golden Retriever</span><br />
+          <strong>Age</strong>: <span class="pet-age">3</span><br />
+          <strong>Location</strong>: <span class="pet-location">Warren, MI</span><br /><br />
+          <button class="btn btn-primary btn-adopt" type="button" data-id="0">Adopt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+    integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/js/bootstrap.min.js"
+    integrity="sha512-5BqtYqlWfJemW5+v+TZUs22uigI8tXeVah5S/1Z6qBLVO7gakAOtkOzUtgq6dsIo5c0NJdmGPs0H9I+2OHUHVQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.0/web3.min.js"
+    integrity="sha512-bSQ2kf76XufUYS/4XinoHLp5S4lNOyRv0/x5UJACiOMy8ueqTNwRFfUZWmWpwnczjRp9SjiF1jrXbGEim7Y0Xg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/truffle-contract@4.0.31/dist/truffle-contract.min.js"></script>
+  <script>
+    const pets = [
+      {
+        "id": 0,
+        "name": "Frieda",
+        "picture": "images/scottish-terrier.jpeg",
+        "age": 3,
+        "breed": "Scottish Terrier",
+        "location": "Lisco, Alabama"
+      },
+      {
+        "id": 1,
+        "name": "Gina",
+        "picture": "images/scottish-terrier.jpeg",
+        "age": 3,
+        "breed": "Scottish Terrier",
+        "location": "Tooleville, West Virginia"
+      },
+      {
+        "id": 2,
+        "name": "Collins",
+        "picture": "images/french-bulldog.jpeg",
+        "age": 2,
+        "breed": "French Bulldog",
+        "location": "Freeburn, Idaho"
+      },
+      {
+        "id": 3,
+        "name": "Melissa",
+        "picture": "images/boxer.jpeg",
+        "age": 2,
+        "breed": "Boxer",
+        "location": "Camas, Pennsylvania"
+      },
+      {
+        "id": 4,
+        "name": "Jeanine",
+        "picture": "images/french-bulldog.jpeg",
+        "age": 2,
+        "breed": "French Bulldog",
+        "location": "Gerber, South Dakota"
+      },
+      {
+        "id": 5,
+        "name": "Elvia",
+        "picture": "images/french-bulldog.jpeg",
+        "age": 3,
+        "breed": "French Bulldog",
+        "location": "Innsbrook, Illinois"
+      },
+      {
+        "id": 6,
+        "name": "Latisha",
+        "picture": "images/golden-retriever.jpeg",
+        "age": 3,
+        "breed": "Golden Retriever",
+        "location": "Soudan, Louisiana"
+      },
+      {
+        "id": 7,
+        "name": "Coleman",
+        "picture": "images/golden-retriever.jpeg",
+        "age": 3,
+        "breed": "Golden Retriever",
+        "location": "Jacksonwald, Palau"
+      },
+      {
+        "id": 8,
+        "name": "Nichole",
+        "picture": "images/french-bulldog.jpeg",
+        "age": 2,
+        "breed": "French Bulldog",
+        "location": "Honolulu, Hawaii"
+      },
+      {
+        "id": 9,
+        "name": "Fran",
+        "picture": "images/boxer.jpeg",
+        "age": 3,
+        "breed": "Boxer",
+        "location": "Matheny, Utah"
+      },
+      {
+        "id": 10,
+        "name": "Leonor",
+        "picture": "images/boxer.jpeg",
+        "age": 2,
+        "breed": "Boxer",
+        "location": "Tyhee, Indiana"
+      },
+      {
+        "id": 11,
+        "name": "Dean",
+        "picture": "images/scottish-terrier.jpeg",
+        "age": 3,
+        "breed": "Scottish Terrier",
+        "location": "Windsor, Montana"
+      },
+      {
+        "id": 12,
+        "name": "Stevenson",
+        "picture": "images/french-bulldog.jpeg",
+        "age": 3,
+        "breed": "French Bulldog",
+        "location": "Kingstowne, Nevada"
+      },
+      {
+        "id": 13,
+        "name": "Kristina",
+        "picture": "images/golden-retriever.jpeg",
+        "age": 4,
+        "breed": "Golden Retriever",
+        "location": "Sultana, Massachusetts"
+      },
+      {
+        "id": 14,
+        "name": "Ethel",
+        "picture": "images/golden-retriever.jpeg",
+        "age": 2,
+        "breed": "Golden Retriever",
+        "location": "Broadlands, Oregon"
+      },
+      {
+        "id": 15,
+        "name": "Terry",
+        "picture": "images/golden-retriever.jpeg",
+        "age": 2,
+        "breed": "Golden Retriever",
+        "location": "Dawn, Wisconsin"
+      }
+    ];
+
+    class App {
+      constructor() {
+        this.web3Provider = null;
+        this.contracts = {};
+      }
+      init() {
+        this.initUI();
+        this.initWeb3();
+        this.initContract();
+        this.initEvents();
+      };
+      initUI() {
+        const petsRow = $('#petsRow');
+        const petTemplate = $('#petTemplate');
+        for (let i = 0; i < pets.length; i++) {
+          petTemplate.find('.panel-title').text(pets[i].name);
+          petTemplate.find('img').attr('src', pets[i].picture);
+          petTemplate.find('.pet-breed').text(pets[i].breed);
+          petTemplate.find('.pet-age').text(pets[i].age);
+          petTemplate.find('.pet-location').text(pets[i].location);
+          petTemplate.find('.btn-adopt').attr('data-id', pets[i].id);
+          petsRow.append(petTemplate.html());
+        }
+      }
+      initWeb3() {
+        if (typeof web3 !== 'undefined') {
+          this.web3Provider = web3.currentProvider;
+        } else {
+          this.web3Provider = new Web3.prviders.HttpProvider("http://127.0.0.1:8545");
+        }
+        web3 = new Web3(this.web3Provider);
+      }
+      initContract() {
+        $.getJSON('Adoption.json', data => {
+          const AdoptionArtifact = data;
+          this.contracts.Adoption = TruffleContract(AdoptionArtifact);
+          this.contracts.Adoption.setProvider(this.web3Provider);
+          return this.markAdopted();
+        });
+      }
+      async markAdopted() {
+        try {
+          const instance = await this.contracts.Adoption.deployed();
+          const adopters = await instance.getAdopters.call();
+          for (let i = 0; i < adopters.length; i++) {
+            console.log(adopters[i]);
+            if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
+              $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true).removeClass('btn-primary').addClass('btn-danger');
+            }
+          }
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+      initEvents() {
+        $(document).on('click', '.btn-adopt', this.handleAdopt.bind(this));
+      }
+      async handleAdopt(event) {
+        event.preventDefault();
+        const petId = parseInt($(event.target).data('id'));
+        try {
+          const accounts = await web3.eth.getAccounts();
+          const account = accounts[0];
+          const instance = await this.contracts.Adoption.deployed();
+          await instance.adopt(petId, { from: account });
+          await this.markAdopted();
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+    }
+
+    const app = new App();
+    app.init();
+  </script>
+</body>
+
+</html>
