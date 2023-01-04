@@ -20,6 +20,10 @@ class Container {
         const amountPerContainer = amount / this.group.members.size;
         this.group.amountPerContainer += amountPerContainer;
     }
+    /**
+     * O(N)
+     * 还是需要遍历组中的所有容器
+     */
     connectTo(other) {
         if (this.group === other.group) return
         const size1 = this.group.members.size
