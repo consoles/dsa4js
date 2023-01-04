@@ -1,17 +1,17 @@
 class User {
     constructor(name) {
         this.name = name;
-        this.friends = new Set()
+        this.directFriends = new Set()
     }
     befriend(other) {
-        this.friends.add(other)
-        other.friends.add(this)
+        this.directFriends.add(other)
+        other.directFriends.add(this)
     }
     /**
      * 是否直接好友
      */
     isDirectFriendOf(other) {
-        return this.friends.has(other)
+        return this.directFriends.has(other)
     }
     /**
      * a - b
@@ -22,10 +22,31 @@ class User {
      */
     isIndirectFriendOf(other) {
         if (this.isDirectFriendOf(other)) return false
-        for (const friend of this.friends) {
+        for (const friend of this.directFriends) {
             if (friend.isDirectFriendOf(this) && friend.isDirectFriendOf(other)) return true
             const flag = friend.isIndirectFriendOf(other)
             if (flag) return true
+        }
+        return false
+    }
+    /**
+     * 检查间接连接需要访问一个（无向）图，实现这个算法最简单的方式是使用 BFS
+     * 从当前节点向外扩散，直到找到 other
+     */
+    isIndirectFriendOf2(other) {
+        const queue = [this]
+        const visited = new Set()
+        while (queue.length > 0) {
+            const user = queue.shift()
+            if (user === other) {
+                return true
+            }
+            if (!visited.has(user)) {
+                visited.add(user)
+                for (const u of user.directFriends) {
+                    queue.push(u)
+                }
+            }
         }
         return false
     }
@@ -41,6 +62,6 @@ c.befriend(d)
 console.log(a.isDirectFriendOf(b));
 console.log(c.isDirectFriendOf(b));
 console.log(c.isDirectFriendOf(a));
-console.log(c.isIndirectFriendOf(a));
+console.log(c.isIndirectFriendOf(a), c.isIndirectFriendOf2(a));
 console.log(d.isDirectFriendOf(a));
-console.log(d.isIndirectFriendOf(a));
+console.log(d.isIndirectFriendOf(a), d.isIndirectFriendOf2(a));
