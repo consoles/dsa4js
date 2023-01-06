@@ -51,6 +51,8 @@ class Container {
      * O(1)
      * 合并 2 个循环链表只需要常数时间
      * 交换当前实例和 other 的 next 字段
+     * 
+     * 因为只有在调用 `getAmount` 的时候水量才是可见的，所以可以将更新 “推迟” 到下一次调用 `getAmount` 的时候
      */
     connectTo(other) {
         const oldNext = this.next;
