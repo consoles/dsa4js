@@ -76,3 +76,5 @@ a.connectTo(b)
 b.connectTo(c)
 b.connectTo(d)
 console.log(a.amount, b.amount, c.amount, d.amount)
+
+// 最坏时间复杂度为 log(N)，但是使用均摊复杂度分析的话，这种实现的所有方法的复杂度都是 O(1)，性能非常好，在绝大多数情况下这种实现的性能是最优的
