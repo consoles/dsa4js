@@ -17,6 +17,12 @@ class Container {
     groupSize() {
         return this.group.members.size
     }
+    // O(1)
+    flush() {
+        this.group.amountPerContainer = 0;
+        this.group.members.clear();
+        this.group.members.add(this);
+    }
     /**
      * O(1) 复杂度
      * 优化了所有容器中都存储有自己的 amount 改为 所有相连容器都指向同一个 group，amount 只存储一次

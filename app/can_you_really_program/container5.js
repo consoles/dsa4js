@@ -7,20 +7,33 @@ class Container {
     constructor() {
         this._amount = 0;
         this.next = this;
+        this._groupSize = 0;
     }
 
     // O(N)
     groupSize() {
         let size = 0
         let current = this
-        while(true) {
+        do {
             size++
             current = current.next
-            if (current === this) {
-                break
-            }
-        }
+        } while(current !== this)
         return size
+    }
+
+    // O(1)
+    groupSize2() {
+        return this._groupSize
+    }
+
+    // O(N)
+    // 想让这个方法复杂度在常数时间，且不增加其他任何方法的复杂度是不可能的
+    flush() {
+        let current = this
+        do {
+            current._amount = 0
+            current = current.next
+        } while(current !== this)
     }
 
     /**
@@ -73,6 +86,7 @@ class Container {
         const oldNext = this.next;
         this.next = other;
         other.next = oldNext;
+        this._groupSize++;
     }
 }
 

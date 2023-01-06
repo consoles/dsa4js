@@ -16,6 +16,12 @@ class Container {
         return root.size;
     }
 
+    // 最坏 O(N*lgN), 均摊 O(1)
+    flush() {
+        const root = this._findRootAndCompress();
+        root.amount = 0;
+    }
+
     /**
      * log(N)
      */
