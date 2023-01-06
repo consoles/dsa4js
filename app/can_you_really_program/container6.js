@@ -1,3 +1,4 @@
+// Speed3
 /**
  * 并查集
  * 使用父指针树
@@ -7,6 +8,12 @@ class Container {
         this._amount = 0;
         this.parent = this; // 最初，每个容器都是它自己树的根节点
         this.size = 1;
+    }
+
+    // 最坏 O(N*lgN), 均摊 O(1)
+    groupSize() {
+        const root = this._findRootAndCompress();
+        return root.size;
     }
 
     /**

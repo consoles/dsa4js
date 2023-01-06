@@ -1,3 +1,4 @@
+// Speed2
 /**
  * 使用循环链表来表示容器组。
  * 一个空的循环链表不包含任何节点，而对于只有一个节点的链表，该节点指向它自己
@@ -6,6 +7,20 @@ class Container {
     constructor() {
         this._amount = 0;
         this.next = this;
+    }
+
+    // O(N)
+    groupSize() {
+        let size = 0
+        let current = this
+        while(true) {
+            size++
+            current = current.next
+            if (current === this) {
+                break
+            }
+        }
+        return size
     }
 
     /**

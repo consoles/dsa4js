@@ -1,3 +1,4 @@
+// Speed1
 class Group{
     constructor(container) {
         this.amountPerContainer = 0;
@@ -11,6 +12,10 @@ class Container {
     }
     get amount() {
         return this.group.amountPerContainer;
+    }
+    // O(1)
+    groupSize() {
+        return this.group.members.size
     }
     /**
      * O(1) 复杂度
