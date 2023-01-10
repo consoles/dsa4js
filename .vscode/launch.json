@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch",
+            "request": "launch",
+            "mainClass": "${fileBasenameNoExtension}",
+            "projectName": "dsa4js"
+        },
+        {
             "name": "Launch",
             "type": "go",
             "request": "launch",

@@ -14,3 +14,4 @@ app/chapter3/3.4/40.echarts.list_len-distribute.option.json
 app/chapter3/3.4/40.echarts.resize-separate-chain-hash.option.json
 package-lock.json
 test.js
+out/
