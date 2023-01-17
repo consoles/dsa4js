@@ -89,5 +89,6 @@ public class Container10 {
         b.connectTo(c);
         a.addWater(0.9);
         System.out.println(0.3 + 0.3 + 0.3); // 0.8999999999999999
+        System.out.println(Double.NaN != Double.NaN);
     }
 }
