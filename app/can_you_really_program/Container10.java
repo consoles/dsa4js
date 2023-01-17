@@ -58,8 +58,15 @@ public class Container10 {
     }
 
     private boolean postAddWater(double oldTotal, double addedAmount) {
-        return isGroupBalanced() &&
-            groupAmount() == oldTotal + addedAmount; // 双精度浮点数的精确比较
+//        return isGroupBalanced() &&
+//            groupAmount() == oldTotal + addedAmount; // 双精度浮点数的精确比较
+
+        return isGroupBalanced() && almostEqual(groupAmount(), oldTotal + addedAmount);
+    }
+
+    private static boolean almostEqual(double x, double y) {
+        final double EPSILON = 1e-4; // 允许误差
+        return Math.abs(x - y) < EPSILON;
     }
 
     /**
