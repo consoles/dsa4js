@@ -1,4 +1,4 @@
-package ch5.exercises;
+package io.consoles.ch5.exercises;
 
 /**
  * Javadoc 提到不能在构造函数执行期间修改 val 字段。在多线程上下文中，程序在执行构造函数的时候可能还会执行其他代码。因此，此规范并不完全适合本章介绍的经典契约形式，本章讨论的契约专注于顺序执行的程序。

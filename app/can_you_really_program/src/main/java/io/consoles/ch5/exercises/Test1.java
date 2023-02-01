@@ -1,4 +1,4 @@
-package ch5.exercises;
+package io.consoles.ch5.exercises;
 
 /**
  * 写下 java.util.Collection 接口中 add 方法的契约。

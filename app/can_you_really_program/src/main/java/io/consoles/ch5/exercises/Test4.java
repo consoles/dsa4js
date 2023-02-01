@@ -1,4 +1,4 @@
-package ch5.exercises;
+package io.consoles.ch5.exercises;
 
 import java.util.Random;
 

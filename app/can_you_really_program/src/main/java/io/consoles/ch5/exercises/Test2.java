@@ -1,4 +1,4 @@
-package ch5.exercises;
+package io.consoles.ch5.exercises;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -53,10 +53,10 @@ public class Test2<E> {
             boolean it1HasNext = it1.hasNext();
             boolean it2HasNext = it2.hasNext();
             if (it1HasNext) {
-                list1.add(it1.next());
+                list.add(it1.next());
             }
             if (it2HasNext) {
-                list2.add(it2.next());
+                list.add(it2.next());
             }
             if (!it1HasNext && !it2HasNext) {
                 break;
@@ -66,6 +66,7 @@ public class Test2<E> {
     }
 
     public static void main(String[] args) {
-        System.out.println(Test2.class);
+        List<Integer> list = interleaveLists(List.of(1, 2, 3), List.of(4, 5, 6));
+        System.out.println(list);
     }
 }
