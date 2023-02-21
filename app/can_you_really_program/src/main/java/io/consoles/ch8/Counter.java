@@ -6,6 +6,8 @@ package io.consoles.ch8;
 public class Counter {
     private int n;
 
+    private Object monitor = new Object();
+
     /**
      * 线程不安全的写法
      */
@@ -31,6 +33,17 @@ public class Counter {
         n++;
     }
 
+    /**
+     * 对象级别并发2
+     * 使用类内部的对象作为监视器，替代方法上的锁
+     * increment3 的缺点：当客户端使用 Counter.class 作为监视器的时候会发生冲突
+     */
+    public void increment4() {
+        synchronized (monitor) {
+            n++;
+        }
+    }
+
     @Override
     public String toString() {
         return "" + n;
@@ -47,7 +60,8 @@ public class Counter {
                     for (int j = 0; j < NINCREMENTS; j++)
 //                        counter.increment1();
 //                        counter.increment2();
-                    counter.increment3();
+//                    counter.increment3();
+                    counter.increment4();
                 }
             };
             thread[i].start();
