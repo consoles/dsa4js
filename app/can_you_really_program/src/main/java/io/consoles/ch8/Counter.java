@@ -6,8 +6,13 @@ package io.consoles.ch8;
 public class Counter {
     private int n;
 
+    /**
+     * 将所有方法使用一个全局锁进行包装
+     */
     public void increment() {
-        n++;
+        synchronized (Counter.class) {
+            n++;
+        }
     }
 
     @Override
