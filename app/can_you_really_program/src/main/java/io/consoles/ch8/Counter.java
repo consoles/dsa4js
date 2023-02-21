@@ -7,12 +7,28 @@ public class Counter {
     private int n;
 
     /**
+     * 线程不安全的写法
+     */
+    public void increment1() {
+        n++;
+    }
+
+    /**
+     * 类级别的并发
      * 将所有方法使用一个全局锁进行包装
      */
-    public void increment() {
+    public void increment2() {
         synchronized (Counter.class) {
             n++;
         }
+    }
+
+    /**
+     * 对象级别并发
+     * 在所有实例方法上加锁
+     */
+    public synchronized void increment3() {
+        n++;
     }
 
     @Override
@@ -29,7 +45,9 @@ public class Counter {
             thread[i] = new Thread() {
                 public void run() {
                     for (int j = 0; j < NINCREMENTS; j++)
-                        counter.increment();
+//                        counter.increment1();
+//                        counter.increment2();
+                    counter.increment3();
                 }
             };
             thread[i].start();
