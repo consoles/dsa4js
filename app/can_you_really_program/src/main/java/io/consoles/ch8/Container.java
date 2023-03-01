@@ -20,6 +20,10 @@ public class Container {
         }
     }
 
+    // 简单读取一个 double 类型的值并不是原子操作
+    // 原因是读取 64 位的操作可能被分成读取 2 个读取 32 的操作，而这两个读操作可能会与另一个线程的写操作交错运行。
+    // 如果没有同步块，可能最终读取到一个荒谬的值（高 32 位是新的，低 32 位是旧的，或者相反）
+    // 给 amountPerContainer 加上 volatile 关键字能解决这个问题，因为它能使读操作成为原子性
     public double getAmount() {
         synchronized (group) {
             return group.amountPerContainer;
@@ -29,13 +33,16 @@ public class Container {
     public void addWater(double amount) {
         while (true) {
             Object monitor = group;
+            // 尝试获取监视器
             synchronized (monitor) {
+                // 确保监视器是最新的
                 if (monitor == group) {
                     double amountPerContainer = amount / group.members.size();
                     group.amountPerContainer += amountPerContainer;
                     return;
                 }
             }
+            // 如果监视器过时了就重试
         }
     }
 
