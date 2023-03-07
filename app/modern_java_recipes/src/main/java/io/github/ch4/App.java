@@ -55,7 +55,5 @@ public class App {
             .collect(Collectors.partitioningBy(s -> s.length() % 2 == 0, Collectors.counting()));
         numberLengthMap.forEach((key, value) -> System.out.printf("%5s: %s%n", key, value));
         System.out.println("-------------------");
-
-
     }
 }
