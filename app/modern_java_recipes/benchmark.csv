@@ -1,0 +1,8 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit"
+"io.github.ch9.App2.doubleAndSumParallel","avgt",1,10,107.695186,1.326684,"ms/op"
+"io.github.ch9.App2.doubleAndSumSequential","avgt",1,10,644.224386,7.914305,"ms/op"
+"io.github.ch9.App2.iterativeSum","avgt",1,10,2.653052,0.007082,"ms/op"
+"io.github.ch9.App2.parallelLongStreamSum","avgt",1,10,0.293418,0.001822,"ms/op"
+"io.github.ch9.App2.parallelStreamSum","avgt",1,10,110.458042,6.117819,"ms/op"
+"io.github.ch9.App2.sequentialLongStreamSum","avgt",1,10,2.670915,0.013772,"ms/op"
+"io.github.ch9.App2.sequentialStreamSum","avgt",1,10,83.680886,3.149608,"ms/op"
