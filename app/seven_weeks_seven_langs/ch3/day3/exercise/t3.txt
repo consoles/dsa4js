@@ -1,0 +1,5 @@
+Builder ul({ "author": "Tate", "age":10 },
+  li({ "author": "Tate" }, "Io"),
+  li({ "name": "game", "date" : "2022-01-02" }, "Lua"),
+  li("JavaScript")
+)
