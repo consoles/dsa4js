@@ -1,0 +1,3 @@
+# 脏话替换
+Pucky -> AAA
+Beans -> Darn

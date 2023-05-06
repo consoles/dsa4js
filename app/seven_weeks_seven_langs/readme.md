@@ -85,3 +85,16 @@ VS code 插件 VSC-Prolog 可以配置好 `prolog.executablePath` 可以对 prol
 
 prolog 使用了一种深度优先搜索的决策树，它使用所有可能的组合与规则集合相匹配，并且其编译器对这个过程做了很好的优化。不过，这个策略需要进行大量计算，特别是当数据集规模非常大的时候。这也迫使Prolog用户必须理解语言的工作原理以保持数据集的规模在可控范围内。
 
+## ch5 Scala
+
+基于 Scala 3.1.3 (19.0.2, Java Java HotSpot(TM) 64-Bit Server VM)
+
+`Nil` 的类型 `scala.collection.immutable.Nil.type = List()`
+
+当一个类只有一个实例的时候可以使用 `object` 而不是 `class` 关键字来定义这个类, 这就是单例。
+
+`Nothing` 类时所有类的子类，`Any` 是所有类的父类。`Null` 是一个 trait， null 则是 Null 的一个实例。一个空集合是 Nil，而 Nothing 是一个 trait，是所有类的子类。Nothing 类没有实例，所以不能像 Null 那样对其解引用。例如抛出异常的方法的返回值是 Nothing，意思是根本没有返回值。
+
+柯里化(currying):将一个带有多个参数的函数转换为多个拥有独自参数列表的函数
+
+scala 并发主要包括 actor 和消息传递。actor 拥有线程池和队列池。当发送一条消息给 actor 的时候（使用操作符 !），是将一个对象放到该 actor 队列中。actor 读取消息并采取行动，通常情况下，actor通过模式匹配器去检测消息并执行相应的消息处理。
