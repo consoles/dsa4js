@@ -127,3 +127,268 @@ erlang 3 种并发原语：
 - 用 `!` 发送消息
 - 用 `spawn` 产生进程
 - 用 `receive` 接收消息
+
+## ch7 Clojure
+
+JVM 上基于Lisp 的实现。Lisp 是一种列表语言，有以下特性：
+
+- Lisp 是一种列表语言。函数调用时，取列表第一个元素作函数，列表其余元素作参数。
+- Lisp 使用自有数据结构表示代码。称之为数据即代码（data as code）。
+
+结合这两种特性，所得到是一种特别适合元编程的语言。可以把代码组织成像类里的方法一样。再用这些对象构成树，就能得到一个基本的对象模型。也可以构造一个基于原型的代码组织结构，其中为数据和行为预留下扩展槽。还可以构造出一个纯函数式实现。正是这种灵活性让 Lisp 几乎能支持任何编程范型。
+
+Clojure 使用 STM(Software Transactional Memory) 并发。如果想要修改一个引用的状态，必须在事务内进行操作。
+
+同步情况下，原子和引用都是处理可变状态既简单又安全的方法。和 atom 一样，代理也是封装起来的一份数据。和 Io 中的 future 相似，解引用后的代理会一直阻塞到直到有值可用。使用者可以用函数异步修改数据，而更新会在另一个线程中发生。每次只有一个函数能修改代理的状态。
+
+从引用、代理、或者原子中读取值永远都不会锁定也永远不会阻塞。Clojure 涉及使用快照，其值是瞬时的，并可能立即过期，这正是版本数据库进行快速并发控制的方式。
+
+[leiningen](https://codeberg.org/leiningen/leiningen) 是一个管理 Clojure 程序和 java 配置的工具集。`lein repl` 可以进入 REPL 环境。
+
+宏读取器：
+
+- `;` 表示注释
+- `'` 表示引用
+- `#` 表示匿名函数
+
+Clojure 中有一个基本数据类型叫做 ratio，它支持延迟计算以避免精度损失。
+
+```clojure
+user=> (+ 1 1)
+2
+user=> (- 1)
+-1
+user=> (/ 1 6)
+1/6
+user=> (/ 2 12)
+1/6
+user=> (/ 2.0 12)
+0.16666666666666666
+user=> (class (/ 2.0 12))
+java.lang.Double
+user=> (class (/ 2 12))
+clojure.lang.Ratio
+user=> (mod 5 4)
+1
+user=> (mod 4 4)
+0
+user=> (mod 4 5)
+4
+```
+
+前缀表示法可以实现下面的效果：
+
+```clojure
+user=> (< 1 2 3)
+true
+user=> (< 1 3 2 4)
+false
+user=>
+```
+
+对于任意数量参数组成的列表，只需要一个简单的操作符就能知道它是否已经排序。
+
+在 Clojure 中习惯将 List 用作代码，将 Vector 作为数据。
+以冒号开头的词是关键字，类似ruby中的符号或者erlang中的原子。
+
+### List
+
+```clojure
+user=> (1 2 3)
+Execution error (ClassCastException) at user/eval2118 (REPL:1).
+class java.lang.Long cannot be cast to class clojure.lang.IFn (java.lang.Long is in module java.base of loader 'bootstrap'; clojure.lang.IFn is in unnamed module of loader 'app')
+
+user=> (list 1 2 3)
+(1 2 3)
+user=> '(1 2 3)
+(1 2 3)
+user=>
+
+user=> (first '(:r2d2 :c3po))
+:r2d2
+user=> (last '(:r2d2 :c3po))
+:c3po
+user=> (rest '(:r2d2 :c3po))
+(:c3po)
+user=> (cons :battle-droid '(:r2d2 :c3po))
+(:battle-droid :r2d2 :c3po)
+user=>
+```
+
+### Vector
+
+向量和列表一样，是元素的有序集合，向量是为随机访问优化的，用方括号表示。
+
+```clojure
+user=> [:hutt :wookie :ewok]
+[:hutt :wookie :ewok]
+user=> (first [:hutt :wookie :ewok])
+:hutt
+user=> (nth [:hutt :wookie :ewok] 0)
+:hutt
+user=> (nth [:hutt :wookie :ewok] 2)
+:ewok
+user=> (last [:hutt :wookie :ewok])
+:ewok
+user=> ([:hutt :wookie :ewok] 2)
+:ewok
+user=>  (rest [:hutt :wookie :ewok])
+(:wookie :ewok)
+user=>
+```
+
+向量也是函数，取下标作为参数，可以合并 2 个向量：
+
+```clojure
+user=> (concat [:apple] [:orange])
+(:apple :orange)
+```
+
+### Set
+
+Set 使用 `#{}` 包括起来
+
+```clojure
+user=>  #{:a :b :c}
+#{:c :b :a}
+user=> (def data #{:a :b :c})
+#'user/data
+user=> data
+#{:c :b :a}
+user=> (count data)
+3
+user=> (sort data)
+(:a :b :c)
+user=> (sorted-set 2 3 1 4)
+#{1 2 3 4}
+user=>
+
+user=> (clojure.set/union #{:a} #{:b})
+#{:b :a}
+user=> (clojure.set/difference #{:a :b :c} #{:b})
+#{:c :a}
+user=>
+```
+
+set 也是函数, `#{:a :b :c} :a` 用于判断集合 `{:a, :b, :c}` 是否包含 `:a`
+
+```clojure
+user=> (#{:a :b :c} :a)
+:a
+user=> (#{:a :b :c} :d)
+nil
+user=>
+user=>
+```
+
+### Map
+
+```clojure
+user=> {:a :aa :b :bb :c :cc}
+{:a :aa, :b :bb, :c :cc}
+user=>
+```
+
+缺点是很难看清楚，如果少写了值，也不容易看出来，导致报错：
+
+```clojure
+user=> {:a :aa :b :bb :c}
+Syntax error reading source at (REPL:1:19).
+Map literal must contain an even number of forms
+
+user=>
+```
+
+可以使用逗号作为空白符来分隔：
+
+```clojure
+user=> {:a :aa, :b :bb, :c :cc}
+{:a :aa, :b :bb, :c :cc}
+user=>
+```
+
+映射本身也是函数，
+
+```clojure
+user=> (def person {:name "张三", :age 10})
+#'user/person
+user=> (person :name)
+"张三"
+user=> (:name person)
+"张三"
+user=> (merge {:name "张三", :age 10} {:sex "男"})
+{:name "张三", :age 10, :sex "男"}
+user=> (sorted-map 1 :one, 3 :three, 2 :two)
+{1 :one, 2 :two, 3 :three}
+user=>
+```
+
+### 函数
+
+定义函数：
+
+```clojure
+user=> (defn hello [name] (str "Hello, " name))
+#'user/hello
+user=> (hello "张三")
+"Hello, 张三"
+user=>
+```
+
+可以使用 `doc` 命令查看函数的文档：
+
+```clojure
+user=> (doc str)
+-------------------------
+clojure.core/str
+([] [x] [x & ys])
+  With no args, returns the empty string. With one arg x, returns
+  x.toString().  (str nil) returns the empty string. With more than
+  one arg, returns the concatenation of the str values of the args.
+nil
+user=>
+```
+
+#### 参数的绑定与解构
+
+```clojure
+user=> (def board [[:x :o :x] [:o :x :o] [:o :x :o]])
+#'user/board
+user=> (defn center [[_ [_ c _] _]] c)
+#'user/center
+user=> (center board)
+:x
+user=>
+```
+
+#### 匿名函数
+
+```clojure
+user=> (def people ["Lea", "Jack Scott"])
+#'user/people
+user=> (count "Jack Scott")
+10
+user=> (map count people)
+(3 10)
+user=> (map (fn [w] (* 2 (count w))) people)
+(6 20)
+user=> (map #(* 2 (count %)) people)
+(6 20)
+user=>
+```
+
+计算 2 倍名字的长度 `(map (fn [w] (* 2 (count w))) people)` 就是匿名函数，这种方式还能简写：`(map #(* 2 (count %)) people)`，使用 `#` 定义匿名函数，而 `%` 被绑定到序列的每个元素上，`#` 被称作*宏读取器*（reader macro）。
+
+```clojure
+user=> (def v [3 1 2])
+#'user/v
+user=> (apply + v)
+6
+user=> (apply max v)
+3
+user=> (filter odd? v)
+(3 1)
+user=> (filter #(< % 3) v)
+(1 2)
+```
+
