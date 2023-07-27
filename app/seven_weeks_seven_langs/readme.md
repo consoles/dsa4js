@@ -392,3 +392,38 @@ user=> (filter #(< % 3) v)
 (1 2)
 ```
 
+## ch8 Haskell
+
+Haskell在进行正确性证明上比命令式语言容易得多。
+
+编译器 [GHC](https://www.haskell.org/ghc/), 使用 `ghci` 可以打开 REPL，也可以用 `runhaskell *.hs` 命令直接运行源码。
+
+```
+ghci> :set +t
+ghci> 5
+5
+it :: Num a => a
+ghci> 5.0
+5.0
+it :: Fractional a => a
+ghci> "Hello"
+"Hello"
+it :: String
+ghci> 5 == (2+3)
+True
+it :: Bool
+ghci> :t 5
+5 :: Num a => a
+ghci>
+```
+
+函数：
+
+```
+PS D:\dsa4js\app\seven_weeks_seven_langs\ch7\day3> ghci
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> let x = 10
+ghci> double x = x * 2
+ghci> double 2
+4
+```
