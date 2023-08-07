@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流行病模型</title>
+</head>
+
+<body>
+    <div style="width:fit-content;margin:10px auto;">
+        <p>
+            每个方格都有人居住
+        </p>
+        <ul>
+            <li>如果相邻方格有感染者，易感者在下一步被传染的概率为p</li>
+            <li>感染者在感染后的第n步恢复，感染者恢复后变为免疫者※1</li>
+            <li>免疫者会在恢复后的第m步丧失免疫力※2</li>
+            <li>在初始阶段，居民为感染者的概率为q，为免疫者的概率为r</li>
+        </ul>
+        <ul>
+            <li>※1 感染后的恢复条件可以根据概率决定</li>
+            <li>※2 丧失免疫力的条件也可以根据概率决定</li>
+        </ul>
+        <p>
+            基于易感者（susceptible）、感染者（infected）、免疫者（recovered）这三者的状态转换得到的模型称为 SIR 模型。
+        </p>
+        <p>
+            在一个20×20的方格矩阵中，首先随机设置5%的感染者和1%的免疫者，设感染率为20%。左图是完成72步后的状态推移。黑色表示感染者，灰色表示免疫者。感染周期为4步，免疫维持周期为8步
+        </p>
+        <div id="main"></div>
+        <div id="chart" style="width: 1200px;height:600px;padding-bottom: 20px"></div>
+    </div>
+    <script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.js"></script>
+    <script>
+        const Canvas = G.Canvas;
+
+        const originOffset = 10;
+        const canvasWidth = 900;
+        const canvasHeight = 900;
+
+        const canvas = new Canvas({
+            containerId: 'main',
+            width: canvasWidth + originOffset,
+            height: canvasHeight + originOffset
+        });
+
+        // 棋盘大小 20 * 20
+        const numberOfRows = 20
+        const numberOfColumns = 20
+
+        class SIR {
+            static get STATE() {
+                return {
+                    SUSCEPTIBLE: '易感者', // 易感者
+                    INFECTED: '感染者', // 感染者
+                    RECOVERED: '免疫者' // 免疫者
+                }
+            }
+            static get STATE_COLOR() {
+                return {
+                    [SIR.STATE.SUSCEPTIBLE]: '#ccc',
+                    [SIR.STATE.INFECTED]: '#0f0',
+                    [SIR.STATE.RECOVERED]: '#f00'
+                }
+            }
+            initEmptyBoard(numberOfRows, numberOfColumns) {
+                const board = new Array(numberOfRows)
+                for (let i = 0; i < numberOfRows; i++) {
+                    board[i] = new Array(numberOfColumns)
+                    for (let j = 0; j < numberOfColumns; j++) {
+                        board[i][j] = SIR.STATE.SUSCEPTIBLE
+                    }
+                }
+                return board
+            }
+            constructor({ numberOfRows, numberOfColumns } = {}) {
+                const board = this.initEmptyBoard(numberOfRows, numberOfColumns)
+                this._rectangles = []
+                this._boardHistory = []
+                const INFECTED_PROB = 0.05
+                const RECOVERED_PROB = 0.01
+                // 随机 5% 的感染者和 1% 的免疫者
+                for (let i = 0; i < numberOfRows; i++) {
+                    this._rectangles[i] = []
+                    this._boardHistory[i] = []
+                    for (let j = 0; j < numberOfColumns; j++) {
+                        this._boardHistory[i][j] = []
+                        const rand = Math.random()
+                        if (rand <= RECOVERED_PROB) {
+                            board[i][j] = SIR.STATE.RECOVERED
+                        } else if (rand <= INFECTED_PROB + RECOVERED_PROB) {
+                            board[i][j] = SIR.STATE.INFECTED
+                        }
+                    }
+                }
+                this.numberOfRows = numberOfRows
+                this.numberOfColumns = numberOfColumns
+                this.board = board
+
+                this.widthPerCell = canvasWidth / numberOfColumns
+                this.heightPerCell = canvasHeight / numberOfRows
+
+                this.infectedProb = 0.2 // 感染率
+                this.stepOfInfected = 4 // 感染周期
+                this.stepOfKeepRecovered = 8 // 免疫维持周期
+                this.step = 0
+            }
+
+            getCellNextState(i, j) {
+                // 周围 8 个格子是否有感染者
+                let neighborHasInfected = false
+
+                for (let x = i - 1; x <= i + 1; x++) {
+                    if (neighborHasInfected) {
+                        break
+                    }
+                    for (let y = j - 1; y <= j + 1; y++) {
+                        if (x >= 0 && x < this.numberOfRows && y >= 0 && y < this.numberOfColumns) {
+                            if (x !== i && y !== j) {
+                                const s = this.board[x][y]
+                                if (s === SIR.STATE.INFECTED) {
+                                    neighborHasInfected = true
+                                    break
+                                } 
+                            }
+                        }
+                    }
+                }
+
+                const rand = Math.random()
+                const state = this.board[i][j]
+                let nextState = state
+                if (state === SIR.STATE.SUSCEPTIBLE) {
+                    // 易感者
+                    if (rand <= this.infectedProb) {
+                        nextState = SIR.STATE.INFECTED
+                    }
+                } else if (state === SIR.STATE.INFECTED) {
+                    // 感染者
+                    if (this._boardHistory[i][j].length >= this.stepOfInfected && this._boardHistory[i][j].slice(-this.stepOfInfected).every(x => x === SIR.STATE.INFECTED)) {
+                        nextState = SIR.STATE.RECOVERED
+                    }
+                } else if (state === SIR.STATE.RECOVERED) {
+                    // 免疫者
+                    if (this._boardHistory[i][j].length >= this.stepOfKeepRecovered && this._boardHistory[i][j].slice(-this.stepOfKeepRecovered).every(x => x === SIR.STATE.RECOVERED)) {
+                        nextState = SIR.STATE.SUSCEPTIBLE
+                    }
+                }
+
+                console.debug(`(${i}, ${j})`, state, 'next state:', nextState)
+                return nextState
+            }
+
+            * run() {
+                while (true) {
+                    // 获取下一帧的所有格子的状态
+                    const board = this.initEmptyBoard(this.numberOfRows, this.numberOfColumns)
+                    for (let i = 0; i < this.numberOfRows; i++) {
+                        for (let j = 0; j < this.numberOfColumns; j++) {
+                            this._boardHistory[i][j].push(this.board[i][j])
+                            board[i][j] = this.getCellNextState(i, j)
+                        }
+                    }
+                    console.info(this.board, '->', board)
+                    this.board = board
+                    this.step++
+                    yield board
+                    if (this.step === 72) {
+                        alert('72 steps have passed!')
+                        return
+                    }
+                }
+            }
+
+            get categoryCount() {
+                const counter = {
+                    [SIR.STATE.SUSCEPTIBLE]: 0,
+                    [SIR.STATE.INFECTED]: 0,
+                    [SIR.STATE.RECOVERED]: 0
+                }
+                for (let i = 0; i < this.numberOfRows; i++) {
+                    for (let j = 0; j < this.numberOfColumns; j++) {
+                        counter[this.board[i][j]]++
+                    }
+                }
+                return counter
+            }
+
+            render() {
+                const { widthPerCell, heightPerCell } = this
+                for (let i = 0; i < this.numberOfRows; i++) {
+                    for (let j = 0; j < this.numberOfColumns; j++) {
+                        const attrs = {
+                            x: j * widthPerCell,
+                            y: i * heightPerCell,
+                            width: widthPerCell,
+                            height: heightPerCell,
+                            fill: SIR.STATE_COLOR[this.board[i][j]]
+                        }
+                        let rectangle = this._rectangles[i][j]
+                        if (!rectangle) {
+                            rectangle = canvas.addShape('rect',{attrs})
+                            this._rectangles[i][j] = rectangle
+                        } else {
+                            rectangle.attr(attrs)
+                        }
+                    }
+                }
+                canvas.draw()
+            }
+        }
+
+        (async() => {
+            const sir = new SIR({
+                numberOfRows,
+                numberOfColumns
+            })
+            let i = 0
+            const xAxisData = [i]
+            const c = sir.categoryCount
+            const counter = {
+                [SIR.STATE.SUSCEPTIBLE]: [c[SIR.STATE.SUSCEPTIBLE]],
+                [SIR.STATE.INFECTED]: [c[SIR.STATE.INFECTED]],
+                [SIR.STATE.RECOVERED]: [c[SIR.STATE.RECOVERED]]
+            }
+            sir.render()
+            alert('start game')
+            const it = sir.run()
+            while (true) {
+                sir.render()
+                i++
+                const next = it.next()
+                const c = sir.categoryCount
+                xAxisData.push(i)
+                counter[SIR.STATE.SUSCEPTIBLE].push(c[SIR.STATE.SUSCEPTIBLE])
+                counter[SIR.STATE.INFECTED].push(c[SIR.STATE.INFECTED])
+                counter[SIR.STATE.RECOVERED].push(c[SIR.STATE.RECOVERED])
+                if (next.done) {
+                    break
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000))
+            }
+
+            const chart = echarts.init(document.getElementById('chart'));
+            chart.setOption({
+                title: {
+                    text: '流行病模型'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: Object.keys(counter)
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xAxisData,
+                    boundaryGap: false
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: Object.keys(counter).map(key => {
+                    return {
+                        name: key,
+                        data: counter[key],
+                        type: 'line'
+                    }
+                })
+            })
+        })()
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命游戏</title>
+</head>
+
+<body>
+    <div style="width:fit-content;margin:10px auto;">
+        <p style="text-align: center">
+            方格有填充（生命诞生）和空白（死亡）两种状态，状态的变化遵循下述规则。
+        </p>
+        <ul>
+            <li>每个方格都有 8 个相邻的方格：上、下、左、右，以及 4 个对角</li>
+            <li>如果 1 个空白方格周围有 3 个填充方格，那么下一个时刻，该空白方格会变为填充方格，出现生命。</li>
+            <li>如果 1 个填充方格周围的填充方格的数量小于等于 1 或大于等于 4，下一个时刻该填充方格就会因为周围同类过于稀疏或过于拥挤而消亡。</li>
+        </ul>
+        <div id="main"></div>
+        <p>
+            <a href="https://playgameoflife.com">元胞自动机</a>
+        </p>
+    </div>
+    <script src="../../node_modules/@antv/g/dist/g.min.js"></script>
+    <script>
+        const Canvas = G.Canvas;
+
+        const originOffset = 10;
+        const canvasWidth = 900;
+        const canvasHeight = 900;
+
+        const canvas = new Canvas({
+            containerId: 'main',
+            width: canvasWidth + originOffset,
+            height: canvasHeight + originOffset
+        });
+
+        // 棋盘大小 19 * 19
+        const numberOfRows = 19
+        const numberOfColumns = 19
+
+        class LifeGame {
+            static get STATE() {
+                return {
+                    EMPTY: Symbol.for('EMPTY'),
+                    LIVE: Symbol.for('LIVE'),
+                    DEAD: Symbol.for('DEAD')
+                }
+            }
+            static get STATE_COLOR() {
+                return {
+                    [LifeGame.STATE.EMPTY]: '#ccc',
+                    [LifeGame.STATE.LIVE]: '#0f0',
+                    [LifeGame.STATE.DEAD]: '#f00'
+                }
+            }
+            initEmptyBoard(numberOfRows, numberOfColumns) {
+                const board = new Array(numberOfRows)
+                for (let i = 0; i < numberOfRows; i++) {
+                    board[i] = new Array(numberOfColumns)
+                    for (let j = 0; j < numberOfColumns; j++) {
+                        board[i][j] = LifeGame.STATE.EMPTY
+                    }
+                }
+                return board
+            }
+            constructor({ numberOfRows, numberOfColumns } = {}) {
+                const board = this.initEmptyBoard(numberOfRows, numberOfColumns)
+                this._rectangles = []
+                this._boardHistory = []
+                // 随机一半的格子为有生命的状态
+                for (let i = 0; i < numberOfRows; i++) {
+                    this._rectangles[i] = []
+                    this._boardHistory[i] = []
+                    for (let j = 0; j < numberOfColumns; j++) {
+                        this._boardHistory[i][j] = []
+                        if (Math.random() > .5) {
+                            board[i][j] = LifeGame.STATE.LIVE
+                        }
+                    }
+                }
+                this.numberOfRows = numberOfRows
+                this.numberOfColumns = numberOfColumns
+                this.board = board
+
+                this.widthPerCell = canvasWidth / numberOfColumns
+                this.heightPerCell = canvasHeight / numberOfRows
+            }
+
+            getCellNextState(i, j) {
+                const state = this.board[i][j]
+                // 统计周围 8 个格子中存活数量以及死亡数量
+                let liveCount = 0,
+                    deadCount = 0
+
+                for (let x = i - 1; x <= i + 1; x++) {
+                    for (let y = j - 1; y <= j + 1; y++) {
+                        if (x >= 0 && x < this.numberOfRows && y >= 0 && y < this.numberOfColumns) {
+                            if (x !== i && y !== j) {
+                                const s = this.board[x][y]
+                                console.debug(`(${x}, ${y})`, s)
+                                if (s === LifeGame.STATE.LIVE) {
+                                    liveCount++
+                                } else if (s === LifeGame.STATE.DEAD || s === LifeGame.STATE.EMPTY) {
+                                    deadCount++
+                                }
+                            }
+                        }
+                    }
+                }
+                let nextState = state
+                if (liveCount === 3) {
+                    nextState = LifeGame.STATE.LIVE
+                } else if (liveCount <= 1 || liveCount >= 4) {
+                    nextState = LifeGame.STATE.DEAD
+                }
+                console.debug(`(${i}, ${j})`, state, liveCount, deadCount, 'next state:', nextState)
+                return nextState
+            }
+
+            checkAllDead() {
+                for (let i = 0; i < this.numberOfRows; i++) {
+                    for (let j = 0; j < this.numberOfColumns; j++) {
+                        if (this.board[i][j] === LifeGame.STATE.LIVE) {
+                            return false
+                        }
+                    }
+                }
+                return true
+            }
+
+            * run() {
+                while (true) {
+                    // 获取下一帧的所有格子的状态
+                    const board = this.initEmptyBoard(this.numberOfRows, this.numberOfColumns)
+                    for (let i = 0; i < this.numberOfRows; i++) {
+                        for (let j = 0; j < this.numberOfColumns; j++) {
+                            this._boardHistory[i][j].push(this.board[i][j])
+                            // 如果某个格子连续 8 帧处于生活状态，那么该格子就变为死亡状态
+                            if (this._boardHistory[i][j].length >= 8 && this._boardHistory[i][j].slice(-8).every(s => s === LifeGame.STATE.LIVE)) {
+                                console.warn(`(${i}, ${j}) 连续 8 帧处于生活状态，该格子变为死亡状态`)
+                                board[i][j] = LifeGame.STATE.DEAD
+                            } else {
+                                board[i][j] = this.getCellNextState(i, j)
+                            }
+                        }
+                    }
+                    console.info(this.board, '->', board)
+                    this.board = board
+                    yield board
+                    if (this.checkAllDead()) {
+                        alert('游戏结束，棋盘上的格子全部死亡')
+                        return
+                    } 
+                }
+            }
+
+            render() {
+                const { widthPerCell, heightPerCell } = this
+                for (let i = 0; i < this.numberOfRows; i++) {
+                    for (let j = 0; j < this.numberOfColumns; j++) {
+                        const attrs = {
+                            x: j * widthPerCell,
+                            y: i * heightPerCell,
+                            width: widthPerCell,
+                            height: heightPerCell,
+                            fill: LifeGame.STATE_COLOR[this.board[i][j]]
+                        }
+                        let rectangle = this._rectangles[i][j]
+                        if (!rectangle) {
+                            rectangle = canvas.addShape('rect',{attrs})
+                            this._rectangles[i][j] = rectangle
+                        } else {
+                            rectangle.attr(attrs)
+                        }
+                    }
+                }
+                canvas.draw()
+            }
+        }
+
+        (async() => {
+            const game = new LifeGame({
+                numberOfRows,
+                numberOfColumns
+            })
+            game.render()
+            const it = game.run()
+            while (true) {
+                game.render()
+                const next = it.next()
+                if (next.done) {
+                    break
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000))
+            }
+        })()
+    </script>
+</body>
+
+</html>
