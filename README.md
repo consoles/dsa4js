@@ -14,7 +14,11 @@ $ mocha
 
 [各种排序算法](http://wwwlgis.informatik.uni-kl.de/archiv/wwwdvs.informatik.uni-kl.de/courses/DBSREAL/SS2005/Vorlesungsunterlagen/Implementing_Sorting.pdf)
 
-参见sort.js
+参见 sort.js
+
+### 冒泡排序
+
+不断交换相邻元素，假设按照从小到大排序，第一轮完成后最大元素在最右边，第二轮完成后次大的元素位置正确。所谓的冒泡就是：最大的元素不断冒泡到正确的位置
 
 ### 选择排序
 
