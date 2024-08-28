@@ -49,3 +49,21 @@ var lengthOfLongestSubstring = function (s) {
 // console.log(lengthOfLongestSubstring('abcabcbb'));
 // console.log(lengthOfLongestSubstring('bbbbb'));
 console.log(lengthOfLongestSubstring('pwwkew'));
+
+var lengthOfLongestSubstring2 = function (s) {
+  // 滑动窗口的另一种实现
+  let maxLen = 0;
+  let startIndex = 0;
+  const charMap = new Map();
+
+  for (let endIndex = 0; endIndex < s.length; endIndex++) {
+    // 如果字符在当前窗口中存在，则窗口的左边界移动到下一个不重复的字符的位置（跳过所有重复字符）
+    if (charMap.has(s[endIndex]) && charMap.get(s[endIndex]) >= startIndex) {
+      startIndex = charMap.get(s[endIndex]) + 1;
+    } 
+    charMap.set(s[endIndex], endIndex);
+    maxLen = Math.max(maxLen, endIndex - startIndex + 1);
+  }
+
+  return maxLen;
+}

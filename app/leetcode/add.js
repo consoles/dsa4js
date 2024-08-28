@@ -8,7 +8,7 @@ function add(str1, str2) {
     const x = i >= 0 ? parseInt(str1[i]) : 0;
     const y = j >= 0 ? parseInt(str2[j]) : 0;
     const sum = x + y + carry;
-    res = sum % 10 + res;
+    res = sum % 10 + res; // 新产生的结果是高位
     carry = parseInt(sum / 10);
     i >= 0 ? i-- : 0;
     j >= 0 ? j-- : 0;
@@ -87,5 +87,8 @@ function bigNumAdd(str1, str2) {
 }
 
 // let res = bigNumAdd('4322131234666', '-3322131234666');
-let res = bigNumAdd('3322131234666', '-4322131234666');
+// let res = bigNumAdd('3322131234666', '-4322131234666');
+// console.log(res);
+
+const res = sub('1000','345')
 console.log(res);
