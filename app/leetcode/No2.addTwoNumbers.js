@@ -87,3 +87,26 @@ const l2 = {
 
 const ret = addTwoNumbers(l1, l2);
 console.log(ret);
+
+const ll1 = {
+  val: 2,
+  next: {
+    val: 4,
+    next: {
+      val: 3
+    }
+  }
+}
+
+const ll2 = {
+  val: 5,
+  next: {
+    val: 6,
+    next: {
+      val: 4
+    }
+  }
+}
+
+const ret2 = addTwoNumbers(ll1, ll2);
+console.log(ret2);
