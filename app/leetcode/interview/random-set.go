@@ -33,7 +33,9 @@ func (this *RandomSet) Remove(val int) bool {
 	}
 	idx := this.val2idx[val]
 	// 将最后一个元素和 idx 位置的元素交换，然后删除最后一个元素
-	this.values[idx] = this.values[len(this.values)-1]
+	v := this.values[len(this.values)-1]
+	this.values[idx] = v
+	this.val2idx[v] = idx
 	this.values = this.values[:len(this.values)-1]
 	delete(this.val2idx, val)
 	return true
@@ -46,16 +48,23 @@ func (this *RandomSet) GetRandom() int {
 
 func main() {
 	s := Constructor()
+	// s.Insert(1)
+	// s.Insert(2)
+	// s.Insert(3)
+	// s.Insert(4)
+	// for i := 0; i < 10; i++ {
+	// 	fmt.Println(s.GetRandom())
+	// }
+	// fmt.Println("-------------")
+	// s.Remove(2)
+	// for i := 0; i < 10; i++ {
+	// 	fmt.Println(s.GetRandom())
+	// }
+
+	s.Insert(0)
 	s.Insert(1)
+	s.Remove(0)
 	s.Insert(2)
-	s.Insert(3)
-	s.Insert(4)
-	for i := 0; i < 10; i++ {
-		fmt.Println(s.GetRandom())
-	}
-	fmt.Println("-------------")
-	s.Remove(2)
-	for i := 0; i < 10; i++ {
-		fmt.Println(s.GetRandom())
-	}
+	s.Remove(1)
+	fmt.Println(s.GetRandom())
 }
