@@ -11,7 +11,8 @@ func longestConsecutive(nums []int) int {
 	}
 	longestStreak := 0
 	// 每个数都判断 1 次这个数是不是连续序列开头的那个元素
-	// 如果 num-1 在序列中存在，如果 num-1 在序列中存在，则 num 一定不是开头元素
+	// 如果 num - 1 在序列中存在，则 num 一定不是序列的开头元素
+	// 反之如果 num - 1 在序列中不存在，则 num 一定是序列的起点
 	for num := range numSet {
 		if !numSet[num-1] {
 			curNum := num
