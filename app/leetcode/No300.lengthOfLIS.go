@@ -9,6 +9,9 @@ func max(a, b int) int {
 	return b
 }
 
+// https://writings.sh/post/algorithm-longest-increasing-subsequence
+// 如果已知一个递增序列和其尾巴元素，向它追加一个值更大的元素，构成的新的子序列也是递增序列。
+
 func lengthOfLIS(nums []int) int {
 	// dp[i] 为 nums[i] 结尾的选 nums[i] 的最长子序列的长度
 	n := len(nums)
