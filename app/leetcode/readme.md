@@ -5,3 +5,4 @@
 - 动态规划求最低票价No983
 - 动态规划求最长回文子串No5
 - https://leetcode-cn.com/problems/UlBDOe/
+- 二分法寻找出现重复的数字
