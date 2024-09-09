@@ -38,11 +38,33 @@ func rotate3(nums []int, k int) {
 	slices.Reverse(nums[k:])
 }
 
+func rotate4(nums []int, k int) {
+	// 新声明 1 个数组，将新的数组追加到原来数组的后面，利用滑动窗的概念
+	// 保持滑动窗的大小为数组元素的长度
+	size := len(nums)
+	k = k % size
+	numsCopy := make([]int, 2*size)
+	for i := 0; i < 2*size; i++ {
+		index := i % size
+		numsCopy[i] = nums[index]
+	}
+	// [1,2,3,4] => [1,2,3,4,1,2,3,4]
+	// k = 0, [1,2,3,4]
+	// k = 1, [4,1,2,3]
+	index := size - 1
+	for i := 2*size - k - 1; index >= 0; index-- {
+		nums[index] = numsCopy[i]
+		i--
+	}
+}
+
 func main() {
 	nums := []int{1, 2, 3, 4, 5, 6, 7}
-	rotate3(nums, 3)
+	rotate4(nums, 3)
 	fmt.Println(nums)
 	nums = []int{-1, -100, 3, 99}
-	rotate3(nums, 2)
+	rotate4(nums, 2)
+	nums = []int{1}
+	rotate4(nums, 0)
 	fmt.Println(nums)
 }
