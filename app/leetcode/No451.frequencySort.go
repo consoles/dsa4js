@@ -9,7 +9,7 @@ func frequencySort(s string) string {
 	// 统计每个字符出现的次数
 	// 将字符切片按照出现的次数从大到小进行排序
 	// 重建字符串
-	// ch -> coun
+	// ch -> count
 	counter := make(map[rune]int, 0)
 	for _, ch := range s {
 		counter[ch]++
