@@ -7,15 +7,19 @@ var summaryRanges = function (nums) {
     const ranges = [];
     const len = nums.length;
     if (len <= 0) return ranges;
-    let l = 0;
-    while (l < len) {
-        const start = l;
-        while (l + 1 < len && nums[l + 1] === nums[l] + 1) {
-            l++;
+    let leftIndex = 0
+    while(leftIndex < len) {
+        const leftValue = nums[leftIndex]
+        let rightIndex = leftIndex
+        while(rightIndex < len && nums[rightIndex + 1] === nums[rightIndex] + 1) {
+            rightIndex++
         }
-        const item = l === start ? `${nums[l]}` : `${nums[start]}->${nums[l]}`;
-        ranges.push(item);
-        l++;
+        if (leftIndex === rightIndex) {
+            ranges.push(leftValue + '')
+        } else {
+            ranges.push(`${leftValue}->${nums[rightIndex]}`)
+        }
+        leftIndex = rightIndex + 1
     }
     return ranges;
 };
