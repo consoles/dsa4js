@@ -43,7 +43,41 @@ var merge = function (intervals) {
   return res;
 };
 
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+var merge2 = function(intervals) {
+  const res = []
+  // 1. 按照区间的起点进行排序
+  intervals.sort((a,b) => a[0] - b[0])
+  let left = null // 当前区间的左端点
+  let right = null // 当前区间的右端点
+  for (const interval of intervals) {
+      const [l, r] = interval
+      if (left === null) {
+          left = l
+          right = r
+          continue
+      }
+      console.log(l, r, left, right)
+      // 判断 l <= right, 即已经存在的区间可以囊括新的区间
+      if (l <= right) {
+          right = Math.max(right, r)
+      } else {
+          res.push([left, right])
+          left = l
+          right = r
+      }
+  }
+  if (left !== null && right !== null) {
+      res.push([left, right])
+  }
+  return res
+};
+
 a = [[1, 3], [2, 6], [8, 10], [15, 18]];
 // a = [[1, 4], [4, 5]];
 // a = [[1, 4], [2, 3]];
-merge(a);
+r = merge2(a);
+console.log(r);
