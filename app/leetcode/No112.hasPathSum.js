@@ -35,6 +35,30 @@ var hasPathSum = function (root, sum) {
   return !root.left && !root.right ? sum === 0 : hasPathSum(root.left, sum) || hasPathSum(root.right, sum);
 };
 
+var hasPathSum2 = function (root, sum) {
+  if (!root) return false
+  // bfs
+  // 遍历节点的同时，计算当前路径和
+  const qNode = [root]
+  const qSum = [root.val]
+  while (qNode.length) {
+    const node = qNode.shift()
+    const curSum = qSum.shift()
+    if (!node.left && !node.right) {
+      if (curSum === sum) return true
+    }
+    if (node.left) {
+      qNode.push(node.left)
+      qSum.push(curSum + node.left.val)
+    }
+    if (node.right) {
+      qNode.push(node.right)
+      qSum.push(curSum + node.right.val)
+    }
+  }
+  return false
+}
+
 r = {
   val: 5,
   left: {
