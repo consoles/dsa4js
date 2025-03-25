@@ -34,7 +34,7 @@ var rightSideView = function (root) {
 
   const res = [];
 
-  // 2.dfs
+  // 2.dfs, 先递归右子树，保证首次遇到的一定是右边的节点
   function dfs(root, level) {
     if (!root) return;
     // 本层第一个被访问的节点（最右边的节点）
