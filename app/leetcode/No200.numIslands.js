@@ -6,6 +6,7 @@
  */
 var numIslands = function (grid) {
 
+  // 注意：leetcode 矩阵中的是字符串 1，而不是数字 1
   // dfs
   // const mark = new Array(grid.length);
   //
