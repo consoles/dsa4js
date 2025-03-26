@@ -21,6 +21,7 @@ var combine = function (n, k) {
   //   // }
   //
   //   // 剪枝，搜索起点上界 + 接下来要选择的元素个数 - 1 = n
+  // 很朴素的一个情况: [1,2,3,4,5] 中选 3 个数字，当起点位于 4 的时候已经不可能选出来了
   //   for (let i = start; i <= n - (k - path.length) + 1; i++) {
   //     path.push(i)
   //     dfs(i + 1, path)
@@ -83,7 +84,7 @@ var combine = function (n, k) {
     helper(n - 1, k, path)
   }
 
-  helper(n,k,[])
+  helper(n, k, [])
   return paths
 };
 
