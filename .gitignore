@@ -16,3 +16,4 @@ package-lock.json
 test.js
 out/
 *.class
+dist/

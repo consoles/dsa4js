@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "CommonJS",
+      "sourceMap": true,  // 必须开启
+      "outDir": "./dist",
+      "rootDir": "./app"
+    }
+  }

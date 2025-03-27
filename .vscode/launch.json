@@ -16,6 +16,21 @@
             "request": "launch",
             "name": "node.js",
             "program": "${file}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug TS",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "ts-node",
+            "args": [
+                "${file}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
         }
     ]
 }
