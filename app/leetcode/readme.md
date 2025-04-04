@@ -6,3 +6,7 @@
 - 动态规划求最长回文子串No5
 - https://leetcode-cn.com/problems/UlBDOe/
 - 二分法寻找出现重复的数字
+
+# 刷题推荐的语言
+
+1. 不推荐 ts，校验比较严格，在一个文件中定义的类，另一个文件中定义了同名的类，会报错 `Duplicate identifier`。这是一个比较工程化的语言。

@@ -22,7 +22,15 @@ function sortedArrayToBST(nums: number[]): TreeNode | null {
 };
 
 function sortedArrayToBST2(nums: number[]): TreeNode | null {
-    function buildTree(left: number, right: number) :TreeNode |null{
-        
+    function buildTree(left: number, right: number): TreeNode | null {
+        if (left > right) {
+            return null
+        }
+        const middleIndex = Math.floor((left + right) / 2)
+        const root = new TreeNode(nums[middleIndex])
+        root.left = buildTree(left, middleIndex - 1)
+        root.right = buildTree(middleIndex + 1, right)
+        return root
     }
+    return buildTree(0, nums.length - 1)
 };
