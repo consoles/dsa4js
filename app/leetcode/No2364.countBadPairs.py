@@ -18,7 +18,7 @@ class Solution:
         # 移项得到 nums[i] - i != nums[j] - j
         # 正难则反：用总的组合的数目 n*(n-1)//2 减去 nums[i] - i == nums[j] - j 的数对数目即可
         # 设 a[i] = nums[i] - i，就和 No.1521 一样了
-        # py 中对于从 n 个元素中取 k 个这种 Cnk 的组合计算可以使用自带的 comb(n, k) 函数
+        # py 中对于从 n 个元素中取 k 个这种 Cnk 的组合计算可以使用 math.comb(n, k) 函数
         n = len(nums)
         freq = defaultdict(int)
         good_pairs = 0
