@@ -28,8 +28,6 @@ class Solution:
         # return n*(n-1)//2 - good_pairs    
         return math.comb(n, 2) - good_pairs
 
-    
-
 # 5
 # nums = [4,1,3,3]
 
