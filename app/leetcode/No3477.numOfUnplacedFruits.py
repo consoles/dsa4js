@@ -1,6 +1,9 @@
 from typing import List
 
 class Solution:
+    """
+    数据规模在 1000
+    """
     def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:
         """
         模拟
