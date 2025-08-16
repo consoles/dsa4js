@@ -1,5 +1,6 @@
 from typing import List
 
+# https://www.bilibili.com/video/BV15gRaYZE5o
 class SegmentTree:
     def __init__(self, a:List[int]):
         n = len(a)
@@ -14,8 +15,11 @@ class SegmentTree:
             self.max[o] = a[l]
             return
         m = (l + r) // 2
+        # 左子树最大值
         self.build(a, o * 2, l, m)
+        # 右子树最大值
         self.build(a, o * 2 + 1, m + 1, r)
+        # 整棵树的最大值
         self.maintain(o)
 
     def find_first_and_update(self,o,l,r: int, x: int) -> int:
@@ -25,9 +29,11 @@ class SegmentTree:
         有点像最小堆，修改了叶子节点，需要 swim 更新其祖先节点
         """
 
+        # 判断根节点
         if self.max[o] < x: # 区间没有 >= x 的数
             return -1
 
+        # 找到第一个 >= x 的数（只有一个数，肯定是叶子节点）
         if l == r:
             self.max[o] = -1 # 更新为 -1，表示不能放水果
             return l
